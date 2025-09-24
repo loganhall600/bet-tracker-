@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bet Tracker — Safari Safe</title>
+  <meta name="theme-color" content="#0f172a">
+  <style>
+    :root{
+      --bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#94a3b8;--accent:#60a5fa;--accent2:#38bdf8;
+      --danger:#ef4444;--success:#34d399;--border:#1f2937;--chip:#1f2937;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#020617);color:var(--ink);padding:16px}
+    .container{max-width:980px;margin:0 auto}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    h1{font-size:20px;margin:0}
+    .sub{color:var(--muted);font-size:12px}
+    .wrap{background:linear-gradient(180deg,var(--card),#0b1220);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);min-width:120px;flex:1}
+    input, select, textarea{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#0b1220;color:var(--ink)}
+    textarea{min-height:48px;resize:vertical}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    button{appearance:none;border:1px solid var(--border);background:#0b1220;color:var(--ink);padding:10px 12px;border-radius:10px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+    button.small{padding:6px 8px;border-radius:8px;font-size:13px}
+    button.primary{background:linear-gradient(180deg,#1d4ed8,#1e40af);border-color:#1e3a8a}
+    .icon{width:16px;height:16px;fill:currentColor}
+    .section-title{display:flex;gap:8px;align-items:center;color:var(--muted);font-weight:600;margin:4px 0 10px}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:10px 8px;border-bottom:1px solid var(--border);font-size:14px}
+    th{text-align:left;color:var(--muted)}
+    .tag{font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:999px;display:inline-block}
+    .win{color:#065f46;background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3)}
+    .loss{color:#7f1d1d;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25)}
+    .pending{color:#1e3a8a;background:rgba(96,165,250,.12);border-color:rgba(96,165,250,.3)}
+    .push{color:#78350f;background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25)}
+    .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+    @media (max-width:900px){.stat-cards{grid-template-columns:repeat(2,1fr)}}
+    .card{background:#0b1220;border:1px solid var(--border);border-radius:12px;padding:12px}
+    .card .k{color:var(--muted);font-size:12px}
+    .card .v{font-size:18px;font-weight:700;margin-top:2px}
+    .banner{position:sticky;top:0;margin:0 0 10px 0;padding:10px 12px;border-radius:12px;background:#3f1d1d;border:1px solid rgba(239,68,68,.4);color:#fee2e2}
+    .tips{font-size:12px;color:var(--muted);margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="banner" class="banner" style="display:none"></div>
+    <header>
+      <div>
+        <h1>Bet Tracker</h1>
+        <div class="sub">Local-first • Offline • CSV/JSON backup</div>
+      </div>
+      <div class="actions">
+        <button id="btn-export" title="Export CSV">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v10l3.5-3.5 1.4 1.4L12 17l-4.9-6.1 1.4-1.4L12 13V3zM5 19h14v2H5z"/></svg>CSV
+        </button>
+        <button id="btn-export-json" title="Export JSON">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M7 4h10v2H7V4zm0 14h10v2H7v-2zM4 8h2v8H4V8zm14 0h2v8h-2V8z"/></svg>JSON
+        </button>
+        <label class="small" title="Import CSV">
+          <input id="file-csv" type="file" accept=".csv" style="display:none">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 21v-10l-3.5 3.5-1.4-1.4L12 7l4.9 6.1-1.4 1.4L12 11v10zM5 3h14v2H5z"/></svg>Import CSV
+        </label>
+        <label class="small" title="Restore JSON">
+          <input id="file-json" type="file" accept="application/json,.json" style="display:none">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 6V3l5 4-5 4V8C8.7 8 6 10.7 6 14s2.7 6 6 6 6-2.7 6-6h2c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8z"/></svg>Restore JSON
+        </label>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="grid">
+        <section>
+          <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>New / Edit Bet</div>
+          <form id="bet-form" autocomplete="off">
+            <input type="hidden" id="bet-id" value="">
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <label>Date <input type="date" id="bet-date" required></label>
+              <label>Sport <input type="text" id="bet-sport" placeholder="e.g. Football"></label>
+              <label>Event <input type="text" id="bet-event" required placeholder="Home vs Away"></label>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+              <label>Stake <input type="number" id="bet-stake" step="0.01" min="0" required></label>
+              <label>Odds (decimal) <input type="number" id="bet-odds" step="0.01" min="1" required></label>
+              <label>Result
+                <select id="bet-result">
+                  <option value="pending">Pending</option>
+                  <option value="win">Win</option>
+                  <option value="loss">Loss</option>
+                  <option value="push">Push</option>
+                </select>
+              </label>
+            </div>
+            <label style="margin-top:8px">Notes <textarea id="bet-notes" placeholder="Optional notes"></textarea></label>
+            <div class="actions" style="margin-top:10px">
+              <button id="save-btn" class="primary" type="submit">Save Bet</button>
+              <button id="reset-btn" type="button">Reset</button>
+            </div>
+          </form>
+        </section>
+        <section>
+          <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v2H4zM4 10h16v2H4zM4 16h16v2H4z"/></svg>Stats</div>
+          <div id="stats" class="stat-cards"></div>
+          <div class="tips">Tip: for persistence on iOS, open this in Safari via http/https (GitHub Pages or a local server). Private Browsing can disable storage.</div>
+        </section>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin:10px 0"></div>
+
+      <section>
+        <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4zM4 12h16v2H4zM4 18h10v2H4z"/></svg>Bets</div>
+        <div style="overflow-x:auto">
+          <table id="bets-table">
+            <thead><tr>
+              <th>Date</th><th>Sport</th><th>Event</th><th>Stake</th><th>Odds</th><th>Result</th><th>Profit</th><th>Notes</th><th>Actions</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // --- Storage diagnostics ---
+    const proto = location.protocol.replace(':','');
+    function storageOk(){
+      try{
+        const k='__t'+Math.random();
+        localStorage.setItem(k,'1');
+        localStorage.removeItem(k);
+        return true;
+      }catch(e){ return false; }
+    }
+    const STORAGE_OK = storageOk();
+    const FULL_FEATURE_PROTO = (proto==='http' || proto==='https');
+    const banner = document.getElementById('banner');
+    const notes = [];
+    if(!FULL_FEATURE_PROTO) notes.push('Opened via "'+proto+':". For reliable saving and Add to Home Screen, open over http/https (e.g., GitHub Pages or a local server like a‑Shell mini → python -m http.server).');
+    if(!STORAGE_OK) notes.push('Local storage is blocked (Private Browsing or cookies disabled). Data will not persist.');
+    if(notes.length){ banner.style.display='block'; banner.textContent = notes.join(' '); }
+
+    // --- App State ---
+    const LS_BETS = 'bets_v2';
+    let bets = [];
+    let editingId = null;
+
+    // helpers
+    const $ = s => document.querySelector(s);
+    const els = {
+      form: $('#bet-form'), id: $('#bet-id'), date: $('#bet-date'), sport: $('#bet-sport'), event: $('#bet-event'),
+      stake: $('#bet-stake'), odds: $('#bet-odds'), result: $('#bet-result'), notes: $('#bet-notes'),
+      saveBtn: $('#save-btn'), resetBtn: $('#reset-btn'),
+      stats: $('#stats'), tableBody: document.querySelector('#bets-table tbody'),
+      btnExport: $('#btn-export'), btnExportJson: $('#btn-export-json'),
+      fileCsv: $('#file-csv'), fileJson: $('#file-json')
+    };
+
+    function safeSet(key, val){
+      try{ localStorage.setItem(key, val); }
+      catch(e){ console.warn('localStorage write failed:', e); }
+    }
+    function load(){
+      if(!STORAGE_OK){ bets=[]; return; }
+      try{ bets = JSON.parse(localStorage.getItem(LS_BETS)) || []; }catch{ bets=[]; }
+    }
+    function save(){ if(STORAGE_OK) safeSet(LS_BETS, JSON.stringify(bets)); }
+
+    function fmtMoney(x){ return '£' + (Number(x||0).toFixed(2)); }
+    function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+    function calcProfit(b){ if(b.result==='win') return +(b.stake*(b.odds-1)); if(b.result==='loss') return -b.stake; return 0; }
+
+    function renderTable(){
+      const rows = bets.slice().sort((a,b)=> (b.date+a.id) < (a.date+b.id) ? -1 : 1).map(b=>{
+        const profit = calcProfit(b);
+        return `<tr>
+          <td>${escapeHtml(b.date)}</td>
+          <td>${escapeHtml(b.sport||'')}</td>
+          <td>${escapeHtml(b.event)}</td>
+          <td>${fmtMoney(b.stake)}</td>
+          <td>${(b.odds||0).toFixed(2)}</td>
+          <td><span class="tag ${b.result}">${b.result}</span></td>
+          <td>${profit>=0?'+':''}${fmtMoney(profit)}</td>
+          <td>${escapeHtml(b.notes||'')}</td>
+          <td>
+            <button class="small" data-action="edit" data-id="${b.id}">Edit</button>
+            <button class="small" data-action="mark-win" data-id="${b.id}">Win</button>
+            <button class="small" data-action="mark-loss" data-id="${b.id}">Loss</button>
+            <button class="small" data-action="delete" data-id="${b.id}">Delete</button>
+          </td>
+        </tr>`;
+      }).join('');
+      els.tableBody.innerHTML = rows || '<tr><td colspan="9" style="color:var(--muted);text-align:center;padding:14px">No bets yet.</td></tr>';
+    }
+
+    function renderStats(){
+      const settled = bets.filter(b => b.result!=='pending');
+      const wins = settled.filter(b=>b.result==='win').length;
+      const losses = settled.filter(b=>b.result==='loss').length;
+      const pushes = settled.filter(b=>b.result==='push').length;
+      const pending = bets.length - settled.length;
+      const stakeSettled = settled.reduce((s,b)=>s+(b.stake||0),0);
+      const net = settled.reduce((s,b)=>s+calcProfit(b),0);
+      const wr = settled.length ? (wins/settled.length*100) : 0;
+      const roi = stakeSettled ? (net/stakeSettled*100) : 0;
+      const card = (k,v)=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+      els.stats.innerHTML = [
+        card('Settled', settled.length),
+        card('Wins / Losses / Push', `${wins} / ${losses} / ${pushes}`),
+        card('Pending', pending),
+        card('Win Rate', `${wr.toFixed(1)}%`),
+        card('Stake (settled)', fmtMoney(stakeSettled)),
+        card('Net P&L', (net>=0?'+':'')+fmtMoney(net)),
+        card('ROI (settled)', `${roi.toFixed(2)}%`)
+      ].join('');
+    }
+
+    function resetForm(){
+      editingId = null;
+      els.form.reset();
+      els.saveBtn.textContent = 'Save Bet';
+      els.date.value = new Date().toISOString().slice(0,10);
+    }
+
+    function addOrUpdate(e){
+      e.preventDefault();
+      const data = {
+        id: editingId || String(Date.now()),
+        date: els.date.value || new Date().toISOString().slice(0,10),
+        sport: els.sport.value.trim(),
+        event: els.event.value.trim(),
+        stake: parseFloat(els.stake.value)||0,
+        odds: Math.max(1, parseFloat(els.odds.value)||1),
+        result: els.result.value,
+        notes: els.notes.value.trim()
+      };
+      if(!data.event){ alert('Event is required'); return; }
+      if(editingId){
+        const i = bets.findIndex(x=>x.id===editingId);
+        if(i>=0) bets[i] = data;
+      } else { bets.push(data); }
+      save(); resetForm(); renderAll();
+    }
+
+    function onTableClick(e){
+      const btn = e.target.closest('button'); if(!btn) return;
+      const id = btn.dataset.id; const action = btn.dataset.action;
+      const b = bets.find(x=>x.id===id); if(!b) return;
+      if(action==='edit'){
+        editingId = b.id;
+        els.date.value = b.date; els.sport.value=b.sport||''; els.event.value=b.event;
+        els.stake.value=b.stake; els.odds.value=b.odds; els.result.value=b.result; els.notes.value=b.notes||'';
+        els.saveBtn.textContent = 'Update Bet'; window.scrollTo({top:0,behavior:'smooth'});
+      }else if(action==='delete'){
+        if(confirm('Delete this bet?')){ bets = bets.filter(x=>x.id!==id); save(); renderAll(); }
+      }else if(action==='mark-win' || action==='mark-loss'){
+        b.result = action==='mark-win' ? 'win' : 'loss'; save(); renderAll();
+      }
+    }
+
+    function download(name,data,type){
+      const blob = new Blob([data],{type}); const url=URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url);
+    }
+    function exportCSV(){
+      const headers=['id','date','sport','event','stake','odds','result','notes'];
+      const rows=bets.map(b=>headers.map(h=>`"${String(b[h]??'').replaceAll('"','""')}"`).join(','));
+      const csv=[headers.join(','),...rows].join('\\n'); download('bets.csv',csv,'text/csv');
+    }
+    function exportJSON(){ download('bets.json', JSON.stringify({bets},null,2), 'application/json'); }
+    function restoreJSON(file){
+      const reader=new FileReader();
+      reader.onload=()=>{ try{ const data=JSON.parse(reader.result); if(Array.isArray(data.bets)) bets=data.bets; save(); renderAll(); alert('Restore complete'); }catch(e){ alert('Invalid JSON'); } };
+      reader.readAsText(file);
+    }
+    function importCSV(file){
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const text=reader.result; const lines=text.split(/\\r?\\n/).filter(Boolean);
+        if(lines.length<2) return alert('CSV seems empty');
+        const header=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+        function parseLine(line){
+          const parts=[]; let cur=''; let q=false;
+          for(let i=0;i<line.length;i++){ const ch=line[i];
+            if(ch=='"'){ if(q && line[i+1]=='"'){cur+='"';i++;continue;} q=!q; continue; }
+            if(ch==',' && !q){ parts.push(cur); cur=''; continue; } cur+=ch;
+          } parts.push(cur); return parts.map(p=>p.trim());
+        }
+        const imported=[];
+        for(let i=1;i<lines.length;i++){
+          const p=parseLine(lines[i]); if(p.length!==header.length) continue; const o={};
+          for(let j=0;j<header.length;j++) o[header[j]]=p[j];
+          o.stake=parseFloat(o.stake)||0; o.odds=parseFloat(o.odds)||1; imported.push(o);
+        }
+        for(const imp of imported){ const idx=bets.findIndex(b=>b.id===imp.id); if(idx>=0) bets[idx]=Object.assign(bets[idx],imp); else bets.push(imp); }
+        save(); renderAll(); alert(`Imported ${imported.length} rows`);
+      };
+      reader.readAsText(file);
+    }
+
+    function bind(){
+      els.form.addEventListener('submit', addOrUpdate);
+      els.resetBtn.addEventListener('click', resetForm);
+      els.tableBody.addEventListener('click', onTableClick);
+      els.btnExport.addEventListener('click', exportCSV);
+      els.btnExportJson.addEventListener('click', exportJSON);
+      els.fileCsv.addEventListener('change', e=>{ const f=e.target.files && e.target.files[0]; if(f) importCSV(f); e.target.value=''; });
+      els.fileJson.addEventListener('change', e=>{ const f=e.target.files && e.target.files[0]; if(f) restoreJSON(f); e.target.value=''; });
+    }
+
+    function renderAll(){ renderTable(); renderStats(); }
+
+    // Init
+    load(); bind(); resetForm(); renderAll();
+  </script>
+</body>
+</html>
