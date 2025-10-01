@@ -44,6 +44,14 @@
     .card .v{font-size:18px;font-weight:700;margin-top:2px}
     .banner{position:sticky;top:0;margin:0 0 10px 0;padding:10px 12px;border-radius:12px;background:#3f1d1d;border:1px solid rgba(239,68,68,.4);color:#fee2e2}
     .tips{font-size:12px;color:var(--muted);margin-top:8px}
+    .panel{margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#0b1220}
+    .panel h2{margin:0 0 8px 0;font-size:16px;color:var(--ink)}
+    .panel form{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+    .panel small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+    .scroll-x{overflow-x:auto}
+    .status{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .badge{display:inline-block;padding:4px 6px;border-radius:6px;background:var(--chip);font-size:12px;color:var(--muted);margin-right:4px}
+    .odds-table td{white-space:nowrap}
   </style>
 </head>
 <body>
@@ -123,6 +131,63 @@
         </div>
       </section>
     </div>
+
+    <div class="panel" id="live-odds">
+      <h2>Live Odds</h2>
+      <div class="status" id="odds-status">Enter your API key to load real-time markets.</div>
+      <form id="odds-form">
+        <label>API Key
+          <input type="password" id="odds-key" placeholder="The Odds API key" autocomplete="off">
+          <small><a href="https://the-odds-api.com/" target="_blank" rel="noreferrer">Sign up</a> for a free tier key.</small>
+        </label>
+        <label>Sport
+          <select id="odds-sport">
+            <option value="upcoming">All Upcoming</option>
+            <option value="americanfootball_nfl">NFL</option>
+            <option value="americanfootball_ncaaf">NCAAF</option>
+            <option value="basketball_nba">NBA</option>
+            <option value="basketball_ncaab">NCAAB</option>
+            <option value="icehockey_nhl">NHL</option>
+            <option value="baseball_mlb">MLB</option>
+            <option value="soccer_epl">Soccer - EPL</option>
+            <option value="soccer_uefa_champs_league">Soccer - Champions League</option>
+          </select>
+        </label>
+        <label>Region
+          <select id="odds-region">
+            <option value="uk">UK</option>
+            <option value="us">US</option>
+            <option value="eu">EU</option>
+            <option value="au">AU</option>
+          </select>
+        </label>
+        <label>Market
+          <select id="odds-market">
+            <option value="h2h">Head to Head</option>
+            <option value="spreads">Spreads</option>
+            <option value="totals">Totals</option>
+          </select>
+        </label>
+        <button class="primary" type="submit">Fetch Live Odds</button>
+      </form>
+      <div class="scroll-x">
+        <table class="odds-table" id="odds-table">
+          <thead><tr><th>Commence</th><th>Event</th><th>Bookmaker</th><th>Market</th><th>Outcome</th><th>Price</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel" id="sports-stats">
+      <h2>Sports Breakdown</h2>
+      <div class="status">Aggregated performance by sport from your tracked bets.</div>
+      <div class="scroll-x">
+        <table id="sports-table">
+          <thead><tr><th>Sport</th><th>Bets</th><th>Settled</th><th>Win %</th><th>Net</th><th>ROI</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -146,6 +211,7 @@
 
     // --- App State ---
     const LS_BETS = 'bets_v2';
+    const LS_ODDS_KEY = 'odds_api_key';
     let bets = [];
     let editingId = null;
 
@@ -159,6 +225,11 @@
       btnExport: $('#btn-export'), btnExportJson: $('#btn-export-json'),
       fileCsv: $('#file-csv'), fileJson: $('#file-json')
     };
+    const oddsEls = {
+      form: $('#odds-form'), key: $('#odds-key'), sport: $('#odds-sport'), region: $('#odds-region'),
+      market: $('#odds-market'), status: $('#odds-status'), tableBody: document.querySelector('#odds-table tbody')
+    };
+    const sportsTableBody = document.querySelector('#sports-table tbody');
 
     function safeSet(key, val){
       try{ localStorage.setItem(key, val); }
@@ -217,6 +288,107 @@
         card('Net P&L', (net>=0?'+':'')+fmtMoney(net)),
         card('ROI (settled)', `${roi.toFixed(2)}%`)
       ].join('');
+    }
+
+    function renderSportBreakdown(){
+      if(!sportsTableBody) return;
+      const map = new Map();
+      for(const bet of bets){
+        const sportKey = bet.sport?.trim() || '—';
+        if(!map.has(sportKey)) map.set(sportKey, {sport:sportKey,total:0,settled:0,wins:0,stake:0,net:0});
+        const bucket = map.get(sportKey);
+        bucket.total += 1;
+        if(bet.result !== 'pending'){
+          bucket.settled += 1;
+          if(bet.result === 'win') bucket.wins += 1;
+          bucket.stake += bet.stake || 0;
+          bucket.net += calcProfit(bet);
+        }
+      }
+      const rows = Array.from(map.values()).sort((a,b)=>a.sport.localeCompare(b.sport)).map(item=>{
+        const winRate = item.settled ? (item.wins / item.settled * 100) : 0;
+        const roi = item.stake ? (item.net / item.stake * 100) : 0;
+        return `<tr>
+          <td>${escapeHtml(item.sport)}</td>
+          <td>${item.total}</td>
+          <td>${item.settled}</td>
+          <td>${winRate.toFixed(1)}%</td>
+          <td>${(item.net>=0?'+':'')+fmtMoney(item.net)}</td>
+          <td>${roi.toFixed(2)}%</td>
+        </tr>`;
+      }).join('');
+      sportsTableBody.innerHTML = rows || '<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:12px">Add bets to see sport level performance.</td></tr>';
+    }
+
+    function setOddsStatus(text, tone='muted'){
+      if(!oddsEls.status) return;
+      oddsEls.status.textContent = text;
+      oddsEls.status.style.color = tone==='error' ? '#f87171' : (tone==='success' ? '#34d399' : 'var(--muted)');
+    }
+
+    function renderOddsRows(events){
+      if(!oddsEls.tableBody) return;
+      const rows = [];
+      for(const event of events){
+        const eventName = `${event.home_team || ''}` + (event.away_team ? ` vs ${event.away_team}` : '');
+        const commence = event.commence_time ? new Date(event.commence_time).toLocaleString() : 'TBD';
+        for(const book of event.bookmakers || []){
+          const markets = book.markets || [];
+          for(const market of markets){
+            for(const outcome of market.outcomes || []){
+              const priceText = outcome.point!=null ? `${outcome.price ?? ''} (${outcome.point})` : (outcome.price ?? '');
+              rows.push(`<tr>
+                <td>${escapeHtml(commence)}</td>
+                <td>${escapeHtml(eventName.trim() || event.sport_title || event.id)}</td>
+                <td>${escapeHtml(book.title || book.key)}</td>
+                <td>${escapeHtml(market.key)}</td>
+                <td>${escapeHtml(outcome.name || '')}</td>
+                <td>${escapeHtml(priceText.toString())}</td>
+              </tr>`);
+            }
+          }
+        }
+      }
+      oddsEls.tableBody.innerHTML = rows.join('') || '<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:12px">No odds returned for this selection.</td></tr>';
+    }
+
+    async function fetchLiveOdds(e){
+      e.preventDefault();
+      if(!oddsEls.key || !oddsEls.tableBody) return;
+      const apiKey = oddsEls.key.value.trim();
+      if(!apiKey){ setOddsStatus('Add your API key to request odds.', 'error'); return; }
+      const sport = oddsEls.sport.value;
+      const region = oddsEls.region.value;
+      const market = oddsEls.market.value;
+      const params = new URLSearchParams({regions:region,markets:market,oddsFormat:'decimal'});
+      const url = `https://api.the-odds-api.com/v4/sports/${encodeURIComponent(sport)}/odds/?${params.toString()}&apiKey=${encodeURIComponent(apiKey)}`;
+      setOddsStatus('Fetching latest prices…');
+      oddsEls.tableBody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:12px">Loading…</td></tr>';
+      try{
+        const res = await fetch(url);
+        if(res.status===401){ setOddsStatus('Invalid API key.', 'error'); oddsEls.tableBody.innerHTML=''; return; }
+        if(res.status===429){ setOddsStatus('Rate limited by API provider. Try again later.', 'error'); oddsEls.tableBody.innerHTML=''; return; }
+        if(!res.ok){ setOddsStatus(`Request failed (${res.status}).`, 'error'); oddsEls.tableBody.innerHTML=''; return; }
+        const data = await res.json();
+        renderOddsRows(Array.isArray(data)?data:[]);
+        setOddsStatus(`Showing ${Array.isArray(data)?data.length:0} events.`, 'success');
+        if(STORAGE_OK) safeSet(LS_ODDS_KEY, apiKey);
+      }catch(err){
+        console.error(err);
+        setOddsStatus('Unable to reach odds service.', 'error');
+        oddsEls.tableBody.innerHTML='';
+      }
+    }
+
+    function restoreOddsKey(){
+      if(!oddsEls.key || !STORAGE_OK) return;
+      try{
+        const saved = localStorage.getItem(LS_ODDS_KEY);
+        if(saved){
+          oddsEls.key.value = saved;
+          setOddsStatus('Stored API key loaded. Fetch to refresh odds.', 'success');
+        }
+      }catch{}
     }
 
     function resetForm(){
@@ -310,12 +482,17 @@
       els.btnExportJson.addEventListener('click', exportJSON);
       els.fileCsv.addEventListener('change', e=>{ const f=e.target.files && e.target.files[0]; if(f) importCSV(f); e.target.value=''; });
       els.fileJson.addEventListener('change', e=>{ const f=e.target.files && e.target.files[0]; if(f) restoreJSON(f); e.target.value=''; });
+      if(oddsEls.form) oddsEls.form.addEventListener('submit', fetchLiveOdds);
     }
 
-    function renderAll(){ renderTable(); renderStats(); }
+    function renderAll(){
+      renderTable();
+      renderStats();
+      renderSportBreakdown();
+    }
 
     // Init
-    load(); bind(); resetForm(); renderAll();
+    load(); restoreOddsKey(); bind(); resetForm(); renderAll();
   </script>
 </body>
 </html>
