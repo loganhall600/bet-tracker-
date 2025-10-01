@@ -18,6 +18,12 @@
     h1{font-size:20px;margin:0}
     .sub{color:var(--muted);font-size:12px}
     .wrap{background:linear-gradient(180deg,var(--card),#0b1220);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .primary-nav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}
+    .primary-nav button{appearance:none;border:1px solid var(--border);background:#0b1220;color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:13px;letter-spacing:.01em;display:flex;align-items:center;gap:6px}
+    .primary-nav button.active{background:linear-gradient(180deg,#1d4ed8,#1e40af);border-color:#1e3a8a}
+    .primary-nav button .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.45);box-shadow:0 0 0 4px rgba(96,165,250,.25)}
+    .app-section{display:none}
+    .app-section.active{display:block}
     .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
     @media (max-width:900px){.grid{grid-template-columns:1fr}}
     label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);min-width:120px;flex:1}
@@ -44,6 +50,36 @@
     .card .v{font-size:18px;font-weight:700;margin-top:2px}
     .banner{position:sticky;top:0;margin:0 0 10px 0;padding:10px 12px;border-radius:12px;background:#3f1d1d;border:1px solid rgba(239,68,68,.4);color:#fee2e2}
     .tips{font-size:12px;color:var(--muted);margin-top:8px}
+    .table-controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+    .table-controls label{max-width:220px}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);font-size:12px;background:#0b1220;color:var(--muted)}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);color:var(--accent);border:1px solid rgba(96,165,250,.25);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+    .value-table tbody tr.positive{background:rgba(34,197,94,.06)}
+    .value-table tbody tr.negative{background:rgba(239,68,68,.04)}
+    .subtable{margin-top:18px}
+    .module-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    @media (max-width:900px){.module-grid{grid-template-columns:1fr}}
+    .selection-list{display:grid;gap:10px}
+    .selection-card{border:1px solid var(--border);border-radius:12px;padding:12px;background:#0b1220;display:flex;flex-direction:column;gap:8px}
+    .selection-card header{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+    .selection-card strong{font-size:15px;color:var(--ink)}
+    .selection-card footer{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+    .selection-card button{align-self:flex-start}
+    .slip{border:1px solid var(--border);border-radius:12px;padding:12px;background:#0b1220;display:flex;flex-direction:column;gap:10px}
+    .slip ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+    .slip li{border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;display:flex;flex-direction:column;gap:6px}
+    .slip li .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+    .performance-grid{display:grid;gap:12px;margin-top:12px}
+    .performance-grid table{width:100%;border-collapse:collapse}
+    .performance-grid th,.performance-grid td{padding:10px 8px;border-bottom:1px solid var(--border);font-size:13px}
+    .performance-grid th{text-align:left;color:var(--muted)}
+    .badge{padding:4px 8px;border-radius:999px;font-size:11px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25);color:var(--accent)}
+    .trend-up{color:#22c55e}
+    .trend-down{color:#ef4444}
+    .mini{font-size:11px;color:var(--muted)}
+    .odds-table tbody tr.highlight{box-shadow:0 0 0 1px rgba(96,165,250,.4);}
+    .filters-row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+    .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
   </style>
 </head>
 <body>
@@ -72,7 +108,16 @@
       </div>
     </header>
 
-    <div class="wrap">
+    <nav class="primary-nav">
+      <button data-section="tracker" class="active"><span class="dot"></span>Tracker</button>
+      <button data-section="value"><span class="dot"></span>Value Bets</button>
+      <button data-section="builder"><span class="dot"></span>Bet Builder</button>
+      <button data-section="performance"><span class="dot"></span>Performance Hub</button>
+      <button data-section="odds"><span class="dot"></span>Odds vs Probability</button>
+    </nav>
+
+    <section id="tracker" class="app-section active">
+      <div class="wrap">
       <div class="grid">
         <section>
           <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>New / Edit Bet</div>
@@ -122,7 +167,203 @@
           </table>
         </div>
       </section>
-    </div>
+      </div>
+    </section>
+
+    <section id="value" class="app-section">
+      <div class="wrap">
+        <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v2H4zM4 10h16v2H4zM4 16h16v2H4z"/></svg>Value Betting Lab</div>
+        <p class="sub">Discover overlays by comparing your model to market prices. Add your own projections to track edges over time.</p>
+        <form id="value-form" class="split" autocomplete="off" style="margin-top:12px">
+          <label>Event <input type="text" id="value-event" placeholder="e.g. Arsenal vs Chelsea" required></label>
+          <label>League <input type="text" id="value-league" placeholder="e.g. Premier League"></label>
+          <label>Market <input type="text" id="value-market" placeholder="e.g. Match Odds" required></label>
+          <label>Selection <input type="text" id="value-selection" placeholder="e.g. Arsenal" required></label>
+          <label>Decimal Odds <input type="number" id="value-odds" min="1" step="0.01" required></label>
+          <label>Model Probability (%) <input type="number" id="value-prob" min="1" max="100" step="0.1" required></label>
+          <label>Stake (£) <input type="number" id="value-stake" min="1" step="1" value="10"></label>
+          <label>Kick-off <input type="datetime-local" id="value-kickoff"></label>
+          <label style="grid-column:1/-1">Context <textarea id="value-notes" placeholder="Key angles, injuries, trends"></textarea></label>
+          <div class="actions" style="grid-column:1/-1">
+            <button class="primary" type="submit">Add Projection</button>
+            <button type="button" id="value-reset">Reset</button>
+          </div>
+        </form>
+
+        <div class="stat-cards" id="value-stats" style="margin-top:18px"></div>
+
+        <div class="table-controls">
+          <label>League
+            <select id="value-league-filter"></select>
+          </label>
+          <label>Market
+            <select id="value-market-filter"></select>
+          </label>
+          <label>Minimum Edge (%)
+            <input type="range" id="value-edge-filter" min="0" max="25" step="0.5" value="0">
+          </label>
+          <label>Time horizon
+            <select id="value-time-filter">
+              <option value="all">All upcoming</option>
+              <option value="24">Next 24 hours</option>
+              <option value="72">Next 3 days</option>
+              <option value="168">Next 7 days</option>
+            </select>
+          </label>
+          <div class="pill" id="value-edge-display">Edge ≥ 0.0%</div>
+        </div>
+
+        <div style="overflow-x:auto">
+          <table class="value-table" id="value-table">
+            <thead>
+              <tr>
+                <th>Fixture</th>
+                <th>Market</th>
+                <th>Selection</th>
+                <th>Odds</th>
+                <th>Model Prob.</th>
+                <th>Implied Prob.</th>
+                <th>Edge</th>
+                <th>EV (£)</th>
+                <th>Kick-off</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="builder" class="app-section">
+      <div class="wrap">
+        <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M3 5h18v2H3zm0 6h18v2H3zm0 6h12v2H3z"/></svg>Bet Builder</div>
+        <p class="sub">Craft multi-leg plays and instantly see combined odds, win probability and projected returns.</p>
+        <div class="table-controls">
+          <label>League
+            <select id="builder-league-filter"></select>
+          </label>
+          <label>Market
+            <select id="builder-market-filter"></select>
+          </label>
+          <label>Confidence tier
+            <select id="builder-confidence-filter">
+              <option value="all">All</option>
+              <option value="elite">Elite</option>
+              <option value="strong">Strong</option>
+              <option value="speculative">Speculative</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="module-grid">
+          <div class="selection-list" id="builder-selection-list"></div>
+          <aside class="slip">
+            <header style="display:flex;justify-content:space-between;align-items:center">
+              <strong>Slip</strong>
+              <button id="builder-clear" class="small" type="button">Clear</button>
+            </header>
+            <ul id="builder-slip"></ul>
+            <label>Stake (£) <input type="number" id="builder-stake" min="1" step="1" value="10"></label>
+            <div class="card" style="margin:0">
+              <div class="k">Combined Odds</div>
+              <div class="v" id="builder-odds">1.00</div>
+            </div>
+            <div class="card" style="margin:0">
+              <div class="k">Win Probability</div>
+              <div class="v" id="builder-prob">0.0%</div>
+            </div>
+            <div class="card" style="margin:0">
+              <div class="k">Projected Return</div>
+              <div class="v" id="builder-return">£0.00</div>
+            </div>
+            <div class="card" style="margin:0">
+              <div class="k">Edge vs Market</div>
+              <div class="v" id="builder-edge">0.0%</div>
+            </div>
+            <p class="mini">Edge compares your modelled probability vs implied market probability for the combined legs.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="performance" class="app-section">
+      <div class="wrap">
+        <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M3 3h2v18H3zm4 6h2v12H7zm4-4h2v16h-2zm4 8h2v8h-2zm4-6h2v14h-2z"/></svg>Performance Hub</div>
+        <p class="sub">Deep dive into team and player trends before you commit capital.</p>
+        <div class="table-controls">
+          <label>View
+            <select id="performance-view">
+              <option value="teams">Teams</option>
+              <option value="players">Players</option>
+            </select>
+          </label>
+          <label>League / Competition
+            <select id="performance-league"></select>
+          </label>
+          <label>Form focus
+            <select id="performance-form">
+              <option value="all">Season to date</option>
+              <option value="last5">Last 5</option>
+              <option value="home">Home</option>
+              <option value="away">Away</option>
+            </select>
+          </label>
+          <label>Search
+            <input type="search" id="performance-search" placeholder="Club or player name">
+          </label>
+        </div>
+        <div class="stat-cards" id="performance-stats"></div>
+        <div class="performance-grid" id="performance-table"></div>
+      </div>
+    </section>
+
+    <section id="odds" class="app-section">
+      <div class="wrap">
+        <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v2H4zm0 6h16v2H4zm0 6h16v2H4z"/></svg>Odds vs Probability</div>
+        <p class="sub">Benchmark sportsbook prices against your fair lines. Filter by league, market and edge quality.</p>
+        <div class="filters-row">
+          <label>League
+            <select id="odds-league"></select>
+          </label>
+          <label>Market
+            <select id="odds-market"></select>
+          </label>
+          <label>Sort by
+            <select id="odds-sort">
+              <option value="edge-desc">Highest edge</option>
+              <option value="edge-asc">Lowest edge</option>
+              <option value="time">Kick-off</option>
+            </select>
+          </label>
+          <label>Show
+            <select id="odds-show">
+              <option value="all">All plays</option>
+              <option value="positive">Positive edges only</option>
+              <option value="negative">Negative edges</option>
+            </select>
+          </label>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="odds-table" id="odds-table">
+            <thead>
+              <tr>
+                <th>Fixture</th>
+                <th>Market</th>
+                <th>Selection</th>
+                <th>Odds</th>
+                <th>Implied Prob.</th>
+                <th>Model Prob.</th>
+                <th>Edge</th>
+                <th>Confidence</th>
+                <th>Kick-off</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -160,6 +401,63 @@
       fileCsv: $('#file-csv'), fileJson: $('#file-json')
     };
 
+    const navEls = {
+      buttons: Array.from(document.querySelectorAll('.primary-nav button')),
+      sections: Array.from(document.querySelectorAll('.app-section'))
+    };
+
+    const valueEls = {
+      form: $('#value-form'),
+      event: $('#value-event'),
+      leagueInput: $('#value-league'),
+      market: $('#value-market'),
+      selection: $('#value-selection'),
+      odds: $('#value-odds'),
+      prob: $('#value-prob'),
+      stake: $('#value-stake'),
+      kickoff: $('#value-kickoff'),
+      notes: $('#value-notes'),
+      stats: $('#value-stats'),
+      tableBody: document.querySelector('#value-table tbody'),
+      leagueFilter: $('#value-league-filter'),
+      marketFilter: $('#value-market-filter'),
+      edgeFilter: $('#value-edge-filter'),
+      timeFilter: $('#value-time-filter'),
+      edgeDisplay: $('#value-edge-display'),
+      reset: $('#value-reset')
+    };
+
+    const builderEls = {
+      leagueFilter: $('#builder-league-filter'),
+      marketFilter: $('#builder-market-filter'),
+      confidenceFilter: $('#builder-confidence-filter'),
+      selectionList: $('#builder-selection-list'),
+      slip: $('#builder-slip'),
+      stake: $('#builder-stake'),
+      clear: $('#builder-clear'),
+      odds: $('#builder-odds'),
+      prob: $('#builder-prob'),
+      ret: $('#builder-return'),
+      edge: $('#builder-edge')
+    };
+
+    const performanceEls = {
+      view: $('#performance-view'),
+      league: $('#performance-league'),
+      form: $('#performance-form'),
+      search: $('#performance-search'),
+      stats: $('#performance-stats'),
+      table: $('#performance-table')
+    };
+
+    const oddsEls = {
+      league: $('#odds-league'),
+      market: $('#odds-market'),
+      sort: $('#odds-sort'),
+      show: $('#odds-show'),
+      tableBody: document.querySelector('#odds-table tbody')
+    };
+
     function safeSet(key, val){
       try{ localStorage.setItem(key, val); }
       catch(e){ console.warn('localStorage write failed:', e); }
@@ -173,6 +471,351 @@
     function fmtMoney(x){ return '£' + (Number(x||0).toFixed(2)); }
     function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
     function calcProfit(b){ if(b.result==='win') return +(b.stake*(b.odds-1)); if(b.result==='loss') return -b.stake; return 0; }
+
+    const SECTION_KEY = 'bt_section_pref_v1';
+    const HOUR = 3600000;
+    const futureHours = h => new Date(Date.now() + h * HOUR).toISOString();
+    function formatDateTime(value){
+      if(!value) return '—';
+      const d = new Date(value);
+      if(Number.isNaN(d.getTime())) return '—';
+      return d.toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    }
+    function percent(prob, decimals=1){ return `${(prob*100).toFixed(decimals)}%`; }
+    function impliedFromOdds(odds){ return odds>0 ? 1/odds : 0; }
+    function calcEdgeValue(prob, odds){ return prob - impliedFromOdds(odds); }
+    function expectedValue(prob, odds, stake){ return stake * ((prob*odds) - 1); }
+
+    const curatedSelections = [
+      {
+        id:'pl-ars-che-1x2',
+        event:'Arsenal vs Chelsea',
+        league:'Premier League',
+        country:'England',
+        market:'Match Odds',
+        selection:'Arsenal to Win',
+        odds:1.92,
+        modelProb:0.58,
+        confidence:'elite',
+        stake:25,
+        kickoff: futureHours(30),
+        notes:'Arsenal averaging 2.6 xG at home across last six league fixtures.'
+      },
+      {
+        id:'pl-ars-che-btts',
+        event:'Arsenal vs Chelsea',
+        league:'Premier League',
+        country:'England',
+        market:'Both Teams to Score',
+        selection:'Yes',
+        odds:1.82,
+        modelProb:0.61,
+        confidence:'strong',
+        stake:18,
+        kickoff: futureHours(30),
+        notes:'Chelsea away matches seeing BTTS in 7 of the last 8; Arsenal concede more transitions without Rice.'
+      },
+      {
+        id:'ucl-city-real-over25',
+        event:'Man City vs Real Madrid',
+        league:'UEFA Champions League',
+        country:'Europe',
+        market:'Over 2.5 Goals',
+        selection:'Over 2.5 Goals',
+        odds:1.70,
+        modelProb:0.65,
+        confidence:'elite',
+        stake:22,
+        kickoff: futureHours(74),
+        notes:'Both clubs averaging 1.9 combined xG on target in UCL knockout rounds.'
+      },
+      {
+        id:'ucl-city-real-haaland-shots',
+        event:'Man City vs Real Madrid',
+        league:'UEFA Champions League',
+        country:'Europe',
+        market:'Player Shots on Target',
+        selection:'Erling Haaland 3+ SOT',
+        odds:2.45,
+        modelProb:0.46,
+        confidence:'speculative',
+        stake:10,
+        kickoff: futureHours(74),
+        notes:'Real allow the 3rd most box touches in Champions League; Haaland averaging 2.8 SOT at home.'
+      },
+      {
+        id:'serieA-inter-juve-1x2',
+        event:'Inter vs Juventus',
+        league:'Serie A',
+        country:'Italy',
+        market:'Match Odds',
+        selection:'Inter to Win',
+        odds:2.05,
+        modelProb:0.52,
+        confidence:'strong',
+        stake:16,
+        kickoff: futureHours(50),
+        notes:'Inter unbeaten in 11 with +1.22 xG differential per game; Juve attack averaging 0.9 xG away.'
+      },
+      {
+        id:'serieA-inter-juve-under25',
+        event:'Inter vs Juventus',
+        league:'Serie A',
+        country:'Italy',
+        market:'Under 2.5 Goals',
+        selection:'Under 2.5 Goals',
+        odds:1.95,
+        modelProb:0.57,
+        confidence:'strong',
+        stake:14,
+        kickoff: futureHours(50),
+        notes:'Derby d’Italia averaging 1.8 total goals last five meetings; both top 3 for defensive xGA.'
+      },
+      {
+        id:'laliga-bar-atleti-over25',
+        event:'Barcelona vs Atlético Madrid',
+        league:'La Liga',
+        country:'Spain',
+        market:'Over 2.5 Goals',
+        selection:'Over 2.5 Goals',
+        odds:1.95,
+        modelProb:0.52,
+        confidence:'speculative',
+        stake:12,
+        kickoff: futureHours(98),
+        notes:'Barcelona conceding 1.6 xG at Montjuïc while Atletico attack trending upwards (2.1 xG last 5).'
+      },
+      {
+        id:'laliga-bar-atleti-corners',
+        event:'Barcelona vs Atlético Madrid',
+        league:'La Liga',
+        country:'Spain',
+        market:'Corners',
+        selection:'Over 9.5 Corners',
+        odds:1.90,
+        modelProb:0.58,
+        confidence:'strong',
+        stake:12,
+        kickoff: futureHours(98),
+        notes:'Both sides top four for corners won; Barca concede wing overloads leading to volume.'
+      },
+      {
+        id:'bund-bayern-dortmund-btts',
+        event:'Bayern Munich vs Dortmund',
+        league:'Bundesliga',
+        country:'Germany',
+        market:'Both Teams to Score',
+        selection:'Yes',
+        odds:1.75,
+        modelProb:0.49,
+        confidence:'speculative',
+        stake:10,
+        kickoff: futureHours(26),
+        notes:'Market heavily priced; our model less bullish given Bayern defensive numbers with Neuer back.'
+      },
+      {
+        id:'bund-bayern-dortmund-over35',
+        event:'Bayern Munich vs Dortmund',
+        league:'Bundesliga',
+        country:'Germany',
+        market:'Over 3.5 Goals',
+        selection:'Over 3.5 Goals',
+        odds:2.02,
+        modelProb:0.51,
+        confidence:'strong',
+        stake:11,
+        kickoff: futureHours(26),
+        notes:'Classic Der Klassiker tempo; combined non-penalty xG of 3.4 per game this season.'
+      },
+      {
+        id:'ligue1-psg-marseille-htft',
+        event:'PSG vs Marseille',
+        league:'Ligue 1',
+        country:'France',
+        market:'Half-Time/Full-Time',
+        selection:'PSG/PSG',
+        odds:2.40,
+        modelProb:0.43,
+        confidence:'strong',
+        stake:13,
+        kickoff: futureHours(120),
+        notes:'PSG leading at half in 68% of league games; Marseille slow starters away (0.6 xG first half).'
+      },
+      {
+        id:'ligue1-psg-marseille-mbappe',
+        event:'PSG vs Marseille',
+        league:'Ligue 1',
+        country:'France',
+        market:'Anytime Goalscorer',
+        selection:'Kylian Mbappé',
+        odds:1.75,
+        modelProb:0.61,
+        confidence:'elite',
+        stake:20,
+        kickoff: futureHours(120),
+        notes:'Mbappé 0.92 non-pen xG per 90; Marseille concede most big chances in Ligue 1.'
+      },
+      {
+        id:'eredivisie-ajax-psv-over35',
+        event:'Ajax vs PSV',
+        league:'Eredivisie',
+        country:'Netherlands',
+        market:'Over 3.5 Goals',
+        selection:'Over 3.5 Goals',
+        odds:1.88,
+        modelProb:0.59,
+        confidence:'elite',
+        stake:15,
+        kickoff: futureHours(140),
+        notes:'Ajax matches averaging 3.9 xG; PSV pressing creating high event totals.'
+      },
+      {
+        id:'mls-la-seattle-over25',
+        event:'LAFC vs Seattle Sounders',
+        league:'MLS',
+        country:'USA',
+        market:'Over 2.5 Goals',
+        selection:'Over 2.5 Goals',
+        odds:1.92,
+        modelProb:0.57,
+        confidence:'strong',
+        stake:10,
+        kickoff: futureHours(12),
+        notes:'LAFC home attack firing with 2.3 xG last three; Seattle transition threat intact.'
+      },
+      {
+        id:'champ-ipswich-leeds-over25',
+        event:'Ipswich vs Leeds',
+        league:'EFL Championship',
+        country:'England',
+        market:'Over 2.5 Goals',
+        selection:'Over 2.5 Goals',
+        odds:1.83,
+        modelProb:0.55,
+        confidence:'speculative',
+        stake:9,
+        kickoff: futureHours(60),
+        notes:'Promotion six-pointer with both averaging 1.9 xG for in last ten fixtures.'
+      }
+    ];
+
+    const supplementalSnapshots = [
+      {
+        id:'laliga-girona-villarreal-btts',
+        event:'Girona vs Villarreal',
+        league:'La Liga',
+        country:'Spain',
+        market:'Both Teams to Score',
+        selection:'Yes',
+        odds:1.66,
+        modelProb:0.59,
+        confidence:'monitor',
+        stake:10,
+        kickoff: futureHours(46),
+        notes:'Girona home matches average 3.4 goals; Villarreal defence still leaking big chances.'
+      },
+      {
+        id:'serieA-roma-napoli-under25',
+        event:'Roma vs Napoli',
+        league:'Serie A',
+        country:'Italy',
+        market:'Under 2.5 Goals',
+        selection:'Under 2.5 Goals',
+        odds:1.95,
+        modelProb:0.48,
+        confidence:'monitor',
+        stake:9,
+        kickoff: futureHours(90),
+        notes:'Napoli creating less than 1.1 xG under new manager; Roma attack streaky without Dybala.'
+      },
+      {
+        id:'epl-brentford-fulham-corners',
+        event:'Brentford vs Fulham',
+        league:'Premier League',
+        country:'England',
+        market:'Corners',
+        selection:'Over 10.5 Corners',
+        odds:1.85,
+        modelProb:0.55,
+        confidence:'monitor',
+        stake:8,
+        kickoff: futureHours(110),
+        notes:'Both sides top six for crosses per 90 leading to corner volume.'
+      },
+      {
+        id:'ligue1-lyon-lille-draw',
+        event:'Lyon vs Lille',
+        league:'Ligue 1',
+        country:'France',
+        market:'Match Odds',
+        selection:'Draw',
+        odds:3.25,
+        modelProb:0.31,
+        confidence:'monitor',
+        stake:7,
+        kickoff: futureHours(118),
+        notes:'Both teams compact of late; Lille xG differential drops away from home.'
+      },
+      {
+        id:'mls-atlanta-nyc-over35',
+        event:'Atlanta United vs NYCFC',
+        league:'MLS',
+        country:'USA',
+        market:'Over 3.5 Goals',
+        selection:'Over 3.5 Goals',
+        odds:2.20,
+        modelProb:0.43,
+        confidence:'monitor',
+        stake:8,
+        kickoff: futureHours(36),
+        notes:'Atlanta’s press generating chaos; NYCFC conceding high xG against in transition.'
+      },
+      {
+        id:'ucl-dortmund-atleti-under25',
+        event:'Borussia Dortmund vs Atlético Madrid',
+        league:'UEFA Champions League',
+        country:'Europe',
+        market:'Under 2.5 Goals',
+        selection:'Under 2.5 Goals',
+        odds:1.92,
+        modelProb:0.53,
+        confidence:'monitor',
+        stake:9,
+        kickoff: futureHours(166),
+        notes:'Return leg projected cagey; Atletico away games averaging 1.8 total goals in UCL.'
+      }
+    ];
+
+    const oddsUniverse = [...curatedSelections, ...supplementalSnapshots];
+    const customProjections = [];
+
+    const valueState = { league:'all', market:'all', minEdge:0, timeframe:'all' };
+    const builderState = { slip: [] };
+
+    const teamPerformance = [
+      { team:'Arsenal', league:'Premier League', country:'England', matches:30, wins:21, draws:5, losses:4, goalsFor:72, goalsAgainst:24, xgFor:64.4, xgAgainst:28.7, lastFive:'W W W D W', homeWinRate:0.78, awayWinRate:0.64, formPointsLast5:13, cleanSheets:15, ppg:2.23, streak:'W3', shotsFor:16.8, shotsAgainst:8.4 },
+      { team:'Liverpool', league:'Premier League', country:'England', matches:30, wins:20, draws:7, losses:3, goalsFor:68, goalsAgainst:28, xgFor:62.8, xgAgainst:30.9, lastFive:'W W D W W', homeWinRate:0.81, awayWinRate:0.58, formPointsLast5:13, cleanSheets:13, ppg:2.27, streak:'W2', shotsFor:17.4, shotsAgainst:9.1 },
+      { team:'Manchester City', league:'Premier League', country:'England', matches:30, wins:21, draws:6, losses:3, goalsFor:70, goalsAgainst:27, xgFor:64.7, xgAgainst:29.2, lastFive:'W W W W D', homeWinRate:0.79, awayWinRate:0.62, formPointsLast5:13, cleanSheets:12, ppg:2.30, streak:'W4', shotsFor:18.1, shotsAgainst:8.6 },
+      { team:'Real Madrid', league:'La Liga', country:'Spain', matches:29, wins:24, draws:4, losses:1, goalsFor:68, goalsAgainst:20, xgFor:63.1, xgAgainst:23.3, lastFive:'W W W D W', homeWinRate:0.86, awayWinRate:0.69, formPointsLast5:13, cleanSheets:15, ppg:2.55, streak:'W2', shotsFor:15.9, shotsAgainst:7.3 },
+      { team:'Barcelona', league:'La Liga', country:'Spain', matches:29, wins:20, draws:6, losses:3, goalsFor:63, goalsAgainst:28, xgFor:59.4, xgAgainst:30.1, lastFive:'W W W W W', homeWinRate:0.68, awayWinRate:0.72, formPointsLast5:15, cleanSheets:12, ppg:2.34, streak:'W5', shotsFor:15.6, shotsAgainst:8.9 },
+      { team:'Inter Milan', league:'Serie A', country:'Italy', matches:30, wins:24, draws:4, losses:2, goalsFor:73, goalsAgainst:17, xgFor:65.6, xgAgainst:23.0, lastFive:'W W W W W', homeWinRate:0.83, awayWinRate:0.74, formPointsLast5:15, cleanSheets:16, ppg:2.53, streak:'W7', shotsFor:17.3, shotsAgainst:7.2 },
+      { team:'Bayern Munich', league:'Bundesliga', country:'Germany', matches:28, wins:19, draws:5, losses:4, goalsFor:78, goalsAgainst:32, xgFor:69.2, xgAgainst:30.4, lastFive:'W W L W W', homeWinRate:0.86, awayWinRate:0.57, formPointsLast5:12, cleanSheets:11, ppg:2.29, streak:'W2', shotsFor:19.1, shotsAgainst:9.5 },
+      { team:'Bayer Leverkusen', league:'Bundesliga', country:'Germany', matches:28, wins:24, draws:4, losses:0, goalsFor:74, goalsAgainst:20, xgFor:66.1, xgAgainst:25.8, lastFive:'W W W W W', homeWinRate:0.89, awayWinRate:0.71, formPointsLast5:15, cleanSheets:14, ppg:2.71, streak:'W8', shotsFor:17.9, shotsAgainst:7.6 },
+      { team:'Juventus', league:'Serie A', country:'Italy', matches:30, wins:18, draws:8, losses:4, goalsFor:52, goalsAgainst:24, xgFor:49.3, xgAgainst:27.5, lastFive:'L D D W D', homeWinRate:0.73, awayWinRate:0.56, formPointsLast5:6, cleanSheets:16, ppg:2.07, streak:'D1', shotsFor:14.2, shotsAgainst:9.0 }
+    ];
+
+    const playerPerformance = [
+      { player:'Bukayo Saka', team:'Arsenal', league:'Premier League', position:'RW', matches:29, minutes:2430, goals:15, assists:9, shotsPer90:2.9, xg:14.2, xa:10.6, formRating:8.2, last5Goals:5, last5Assists:3, conversion:0.21, keyPassesPer90:2.5, trend:'hot' },
+      { player:'Erling Haaland', team:'Manchester City', league:'Premier League', position:'ST', matches:27, minutes:2250, goals:21, assists:5, shotsPer90:4.5, xg:22.6, xa:4.2, formRating:7.8, last5Goals:6, last5Assists:1, conversion:0.28, keyPassesPer90:1.1, trend:'hot' },
+      { player:'Jude Bellingham', team:'Real Madrid', league:'La Liga', position:'AM', matches:27, minutes:2295, goals:16, assists:6, shotsPer90:3.0, xg:12.9, xa:6.8, formRating:8.0, last5Goals:4, last5Assists:2, conversion:0.24, keyPassesPer90:2.2, trend:'steady' },
+      { player:'Lautaro Martínez', team:'Inter Milan', league:'Serie A', position:'ST', matches:27, minutes:2180, goals:23, assists:5, shotsPer90:3.9, xg:19.8, xa:4.4, formRating:8.4, last5Goals:7, last5Assists:2, conversion:0.28, keyPassesPer90:1.5, trend:'hot' },
+      { player:'Kylian Mbappé', team:'PSG', league:'Ligue 1', position:'FW', matches:26, minutes:2100, goals:24, assists:7, shotsPer90:4.2, xg:21.5, xa:6.1, formRating:8.5, last5Goals:6, last5Assists:2, conversion:0.27, keyPassesPer90:1.9, trend:'hot' },
+      { player:'Harry Kane', team:'Bayern Munich', league:'Bundesliga', position:'ST', matches:28, minutes:2300, goals:29, assists:5, shotsPer90:4.7, xg:25.2, xa:5.2, formRating:8.3, last5Goals:8, last5Assists:1, conversion:0.30, keyPassesPer90:1.6, trend:'hot' },
+      { player:'Florian Wirtz', team:'Bayer Leverkusen', league:'Bundesliga', position:'AM', matches:27, minutes:2190, goals:11, assists:12, shotsPer90:2.4, xg:9.4, xa:12.1, formRating:7.9, last5Goals:3, last5Assists:4, conversion:0.18, keyPassesPer90:3.4, trend:'steady' },
+      { player:'Mohamed Salah', team:'Liverpool', league:'Premier League', position:'RW', matches:26, minutes:2200, goals:17, assists:9, shotsPer90:3.6, xg:16.5, xa:9.3, formRating:7.7, last5Goals:4, last5Assists:3, conversion:0.23, keyPassesPer90:2.6, trend:'steady' },
+      { player:'Robert Lewandowski', team:'Barcelona', league:'La Liga', position:'ST', matches:27, minutes:2250, goals:18, assists:7, shotsPer90:3.8, xg:17.1, xa:5.5, formRating:7.6, last5Goals:5, last5Assists:2, conversion:0.22, keyPassesPer90:1.8, trend:'steady' },
+      { player:'Cole Palmer', team:'Chelsea', league:'Premier League', position:'AM', matches:28, minutes:2140, goals:14, assists:8, shotsPer90:2.7, xg:12.2, xa:8.4, formRating:7.5, last5Goals:5, last5Assists:3, conversion:0.23, keyPassesPer90:2.9, trend:'hot' }
+    ];
 
     function renderTable(){
       const rows = bets.slice().sort((a,b)=> (b.date+a.id) < (a.date+b.id) ? -1 : 1).map(b=>{
@@ -302,6 +945,488 @@
       reader.readAsText(file);
     }
 
+
+    function uniqueValues(data, key){
+      return Array.from(new Set(data.map(item=>item[key]).filter(Boolean))).sort((a,b)=>String(a).localeCompare(String(b)));
+    }
+    function optionsMarkup(values, allLabel){
+      return `<option value="all">${allLabel}</option>` + values.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    }
+    function formatSignedNumber(val, decimals=2){
+      const sign = val>=0 ? '+' : '-';
+      return sign + Math.abs(val).toFixed(decimals);
+    }
+    function formatSignedPercentDecimal(val){
+      const pct = val*100;
+      const sign = pct>=0 ? '+' : '-';
+      return sign + Math.abs(pct).toFixed(1) + '%';
+    }
+    function allValueSelections(){ return [...curatedSelections, ...customProjections]; }
+    function syncValueFilters(){
+      const leagues = uniqueValues(allValueSelections(),'league');
+      const markets = uniqueValues(allValueSelections(),'market');
+      const prevLeague = valueEls.leagueFilter.value || 'all';
+      const prevMarket = valueEls.marketFilter.value || 'all';
+      valueEls.leagueFilter.innerHTML = optionsMarkup(leagues, 'All leagues');
+      valueEls.marketFilter.innerHTML = optionsMarkup(markets, 'All markets');
+      if(leagues.includes(prevLeague)) valueEls.leagueFilter.value = prevLeague; else valueEls.leagueFilter.value = 'all';
+      if(markets.includes(prevMarket)) valueEls.marketFilter.value = prevMarket; else valueEls.marketFilter.value = 'all';
+    }
+    function applyValueFilterState(){
+      valueState.league = valueEls.leagueFilter.value || 'all';
+      valueState.market = valueEls.marketFilter.value || 'all';
+      valueState.minEdge = Number(valueEls.edgeFilter.value||0);
+      valueState.timeframe = valueEls.timeFilter.value || 'all';
+    }
+    function filterValueSelections(){
+      applyValueFilterState();
+      const now = Date.now();
+      return allValueSelections().filter(sel=>{
+        if(valueState.league!=='all' && sel.league!==valueState.league) return false;
+        if(valueState.market!=='all' && sel.market!==valueState.market) return false;
+        const edgePct = calcEdgeValue(sel.modelProb, sel.odds) * 100;
+        if(edgePct < valueState.minEdge) return false;
+        if(valueState.timeframe!=='all' && sel.kickoff){
+          const diffHours = (new Date(sel.kickoff).getTime() - now)/HOUR;
+          if(diffHours < 0 || diffHours > Number(valueState.timeframe)) return false;
+        }
+        return true;
+      });
+    }
+    function renderValueStats(data){
+      if(!data.length){
+        valueEls.stats.innerHTML = '<div class="card"><div class="k">Opportunities</div><div class="v">0</div></div>';
+        return;
+      }
+      const card = (k,v)=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+      const avgEdge = data.reduce((sum,sel)=>sum + calcEdgeValue(sel.modelProb, sel.odds),0)/data.length;
+      const avgOdds = data.reduce((sum,sel)=>sum + sel.odds,0)/data.length;
+      const positive = data.filter(sel=>calcEdgeValue(sel.modelProb, sel.odds)>0);
+      const avgEv = data.reduce((sum,sel)=>sum + expectedValue(sel.modelProb, sel.odds, sel.stake||10),0)/data.length;
+      valueEls.stats.innerHTML = [
+        card('Opportunities', data.length),
+        card('Avg Edge', formatSignedPercentDecimal(avgEdge)),
+        card('Positive EV', positive.length),
+        card('Avg Odds', avgOdds.toFixed(2)),
+        card('Avg EV (£)', formatSignedNumber(avgEv,2))
+      ].join('');
+    }
+    function renderValueTable(data){
+      if(!data.length){
+        valueEls.tableBody.innerHTML = '<tr><td colspan="10" style="padding:14px;text-align:center;color:var(--muted)">No projections match your filters yet.</td></tr>';
+        return;
+      }
+      const rows = data.map(sel=>{
+        const implied = impliedFromOdds(sel.odds);
+        const edge = calcEdgeValue(sel.modelProb, sel.odds);
+        const ev = expectedValue(sel.modelProb, sel.odds, sel.stake||10);
+        const rowClass = edge>0.005 ? 'positive' : edge<-0.005 ? 'negative' : '';
+        const evMoney = fmtMoney(Math.abs(ev));
+        const evDisplay = (ev>=0?'+':'-') + evMoney;
+        return `<tr class="${rowClass}">
+          <td><strong>${escapeHtml(sel.event)}</strong><div class="mini">${escapeHtml(sel.league||'')}</div></td>
+          <td>${escapeHtml(sel.market)}</td>
+          <td>${escapeHtml(sel.selection)}</td>
+          <td>${sel.odds.toFixed(2)}</td>
+          <td>${percent(sel.modelProb)}</td>
+          <td>${percent(implied)}</td>
+          <td>${formatSignedPercentDecimal(edge)}</td>
+          <td>${evDisplay}</td>
+          <td>${formatDateTime(sel.kickoff)}</td>
+          <td>${escapeHtml(sel.notes||'—')}</td>
+        </tr>`;
+      }).join('');
+      valueEls.tableBody.innerHTML = rows;
+    }
+    function renderValueModule(){
+      const data = filterValueSelections();
+      renderValueStats(data);
+      renderValueTable(data);
+      const minEdge = Number(valueEls.edgeFilter.value||0);
+      valueEls.edgeDisplay.textContent = `Edge ≥ ${minEdge.toFixed(1)}%`;
+    }
+    function resetValueForm(){
+      valueEls.form.reset();
+      valueEls.stake.value = '10';
+    }
+    function handleValueSubmit(e){
+      e.preventDefault();
+      const event = valueEls.event.value.trim();
+      const market = valueEls.market.value.trim();
+      const selection = valueEls.selection.value.trim();
+      if(!event || !market || !selection) return;
+      const probInput = Math.min(99.9, Math.max(1, parseFloat(valueEls.prob.value)||0));
+      const entry = {
+        id:'custom-'+Date.now(),
+        event,
+        league: valueEls.leagueInput.value.trim() || 'Custom',
+        country:'Custom',
+        market,
+        selection,
+        odds: Math.max(1, parseFloat(valueEls.odds.value)||1),
+        modelProb: probInput/100,
+        confidence:'custom',
+        stake: Math.max(1, parseFloat(valueEls.stake.value)||10),
+        kickoff: valueEls.kickoff.value ? new Date(valueEls.kickoff.value).toISOString() : null,
+        notes: valueEls.notes.value.trim() || 'User projection'
+      };
+      customProjections.push(entry);
+      resetValueForm();
+      syncValueFilters();
+      renderValueModule();
+    }
+
+    function builderUniverse(){ return curatedSelections; }
+    function syncBuilderFilters(){
+      const data = builderUniverse();
+      const leagues = uniqueValues(data,'league');
+      const markets = uniqueValues(data,'market');
+      const prevLeague = builderEls.leagueFilter.value || 'all';
+      const prevMarket = builderEls.marketFilter.value || 'all';
+      builderEls.leagueFilter.innerHTML = optionsMarkup(leagues, 'All leagues');
+      builderEls.marketFilter.innerHTML = optionsMarkup(markets, 'All markets');
+      if(leagues.includes(prevLeague)) builderEls.leagueFilter.value = prevLeague; else builderEls.leagueFilter.value = 'all';
+      if(markets.includes(prevMarket)) builderEls.marketFilter.value = prevMarket; else builderEls.marketFilter.value = 'all';
+    }
+    function builderFilterState(){
+      return {
+        league: builderEls.leagueFilter.value || 'all',
+        market: builderEls.marketFilter.value || 'all',
+        confidence: builderEls.confidenceFilter.value || 'all'
+      };
+    }
+    function getFilteredBuilderSelections(){
+      const state = builderFilterState();
+      return builderUniverse().filter(sel=>{
+        if(state.league!=='all' && sel.league!==state.league) return false;
+        if(state.market!=='all' && sel.market!==state.market) return false;
+        if(state.confidence!=='all' && sel.confidence!==state.confidence) return false;
+        return true;
+      }).sort((a,b)=>calcEdgeValue(b.modelProb,b.odds) - calcEdgeValue(a.modelProb,a.odds));
+    }
+    function renderBuilderSelections(){
+      const selections = getFilteredBuilderSelections();
+      if(!selections.length){
+        builderEls.selectionList.innerHTML = '<div class="mini" style="padding:12px">No selections for this filter just yet.</div>';
+        return;
+      }
+      builderEls.selectionList.innerHTML = selections.map(sel=>{
+        const edge = calcEdgeValue(sel.modelProb, sel.odds)*100;
+        const inSlip = builderState.slip.some(leg=>leg.id===sel.id);
+        const btnClass = 'small' + (sel.confidence==='elite' ? ' primary' : '');
+        const disabled = inSlip ? ' disabled' : '';
+        const label = inSlip ? 'Added' : 'Add to slip';
+        return `<article class="selection-card">
+          <header><span>${escapeHtml(sel.league)}</span><span>${formatDateTime(sel.kickoff)}</span></header>
+          <strong>${escapeHtml(sel.event)}</strong>
+          <div>${escapeHtml(sel.market)} — <span class="badge">${escapeHtml(sel.selection)}</span></div>
+          <footer><span>Odds ${sel.odds.toFixed(2)}</span><span class="${edge>=0?'trend-up':'trend-down'}">Edge ${edge.toFixed(1)}%</span></footer>
+          <button type="button" class="${btnClass}" data-action="add-leg" data-id="${sel.id}"${disabled}>${label}</button>
+          <div class="mini">${escapeHtml(sel.notes||'')}</div>
+        </article>`;
+      }).join('');
+    }
+    function addBuilderLeg(id){
+      if(builderState.slip.some(leg=>leg.id===id)) return;
+      const sel = builderUniverse().find(item=>item.id===id);
+      if(!sel) return;
+      builderState.slip.push(sel);
+      renderBuilderSlip();
+      renderBuilderSelections();
+    }
+    function removeBuilderLeg(id){
+      builderState.slip = builderState.slip.filter(leg=>leg.id!==id);
+      renderBuilderSlip();
+      renderBuilderSelections();
+    }
+    function renderBuilderSlip(){
+      if(!builderState.slip.length){
+        builderEls.slip.innerHTML = '<li style="padding:12px;text-align:center;color:var(--muted)">Add selections to build your slip.</li>';
+        updateBuilderSummary();
+        return;
+      }
+      builderEls.slip.innerHTML = builderState.slip.map(leg=>{
+        return `<li data-id="${leg.id}">
+          <div><strong>${escapeHtml(leg.selection)}</strong> <span class="mini">${escapeHtml(leg.market)}</span></div>
+          <div>${escapeHtml(leg.event)}</div>
+          <div class="meta"><span>Odds ${leg.odds.toFixed(2)} • ${percent(leg.modelProb)}</span><button type="button" class="small" data-action="remove-leg" data-id="${leg.id}">Remove</button></div>
+        </li>`;
+      }).join('');
+      updateBuilderSummary();
+    }
+    function updateBuilderSummary(){
+      if(!builderState.slip.length){
+        builderEls.odds.textContent = '1.00';
+        builderEls.prob.textContent = '0.0%';
+        builderEls.ret.textContent = '£0.00';
+        builderEls.edge.textContent = '0.0%';
+        return;
+      }
+      const combinedOdds = builderState.slip.reduce((acc,leg)=>acc*leg.odds,1);
+      const combinedProb = builderState.slip.reduce((acc,leg)=>acc*leg.modelProb,1);
+      const combinedImplied = builderState.slip.reduce((acc,leg)=>acc*impliedFromOdds(leg.odds),1);
+      const stake = Math.max(0, parseFloat(builderEls.stake.value)||0);
+      const projectedReturn = stake * combinedOdds;
+      const winProb = Math.min(0.999, Math.max(0, combinedProb));
+      const edge = combinedProb - combinedImplied;
+      builderEls.odds.textContent = combinedOdds.toFixed(2);
+      builderEls.prob.textContent = percent(winProb);
+      builderEls.ret.textContent = fmtMoney(projectedReturn);
+      builderEls.edge.textContent = formatSignedPercentDecimal(edge);
+    }
+    function syncPerformanceFormOptions(){
+      const view = performanceEls.view.value || 'teams';
+      const prev = performanceEls.form.value || 'all';
+      const options = view==='players'
+        ? [
+            {value:'all',label:'Season to date'},
+            {value:'last5',label:'Last 5 form'},
+            {value:'shots',label:'Shot volume'},
+            {value:'finishing',label:'Finishing'}
+          ]
+        : [
+            {value:'all',label:'Season to date'},
+            {value:'last5',label:'Last 5 form'},
+            {value:'home',label:'Home splits'},
+            {value:'away',label:'Away splits'}
+          ];
+      performanceEls.form.innerHTML = options.map(opt=>`<option value="${opt.value}">${opt.label}</option>`).join('');
+      if(options.some(opt=>opt.value===prev)) performanceEls.form.value = prev;
+    }
+    function performanceUniverse(){
+      return performanceEls.view.value==='players' ? playerPerformance : teamPerformance;
+    }
+    function syncPerformanceLeagueOptions(){
+      const data = performanceUniverse();
+      const leagues = uniqueValues(data,'league');
+      const prev = performanceEls.league.value || 'all';
+      performanceEls.league.innerHTML = optionsMarkup(leagues, 'All competitions');
+      if(leagues.includes(prev)) performanceEls.league.value = prev; else performanceEls.league.value = 'all';
+    }
+    function teamFocusMetric(team, focus){
+      if(focus==='last5') return team.formPointsLast5;
+      if(focus==='home') return team.homeWinRate;
+      if(focus==='away') return team.awayWinRate;
+      return team.wins / team.matches;
+    }
+    function renderPerformance(){
+      const view = performanceEls.view.value;
+      const league = performanceEls.league.value || 'all';
+      const focus = performanceEls.form.value || 'all';
+      const query = (performanceEls.search.value || '').trim().toLowerCase();
+      if(view==='players'){
+        let data = playerPerformance.filter(p=>{
+          if(league!=='all' && p.league!==league) return false;
+          if(query && !(`${p.player} ${p.team}`.toLowerCase().includes(query))) return false;
+          return true;
+        });
+        data = data.sort((a,b)=>playerFocusMetric(b, focus) - playerFocusMetric(a, focus));
+        renderPlayerStats(data);
+        renderPlayerTable(data, focus);
+      }else{
+        let data = teamPerformance.filter(t=>{
+          if(league!=='all' && t.league!==league) return false;
+          if(query && !(`${t.team} ${t.league}`.toLowerCase().includes(query))) return false;
+          return true;
+        });
+        data = data.sort((a,b)=>teamFocusMetric(b, focus) - teamFocusMetric(a, focus));
+        renderTeamStats(data);
+        renderTeamTable(data, focus);
+      }
+    }
+    function renderTeamStats(data){
+      if(!data.length){
+        performanceEls.stats.innerHTML = '<div class="card"><div class="k">Clubs</div><div class="v">0</div></div>';
+        performanceEls.table.innerHTML = '<div class="mini" style="padding:12px">No teams match the current filters.</div>';
+        return;
+      }
+      const totalMatches = data.reduce((sum,team)=>sum+team.matches,0);
+      const totalWins = data.reduce((sum,team)=>sum+team.wins,0);
+      const totalGoalsFor = data.reduce((sum,team)=>sum+team.goalsFor,0);
+      const totalGoalsAgainst = data.reduce((sum,team)=>sum+team.goalsAgainst,0);
+      const cleanSheets = data.reduce((sum,team)=>sum+team.cleanSheets,0);
+      const card = (k,v)=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+      const avgWin = totalMatches ? (totalWins/totalMatches*100) : 0;
+      const avgGoalsFor = totalMatches ? (totalGoalsFor/totalMatches) : 0;
+      const avgGoalsAgainst = totalMatches ? (totalGoalsAgainst/totalMatches) : 0;
+      const cleanSheetPct = totalMatches ? (cleanSheets/totalMatches*100) : 0;
+      performanceEls.stats.innerHTML = [
+        card('Clubs', data.length),
+        card('Avg Win %', `${avgWin.toFixed(1)}%`),
+        card('Goals For', avgGoalsFor.toFixed(2)),
+        card('Goals Against', avgGoalsAgainst.toFixed(2)),
+        card('Clean Sheet %', `${cleanSheetPct.toFixed(0)}%`)
+      ].join('');
+    }
+    function renderTeamTable(data, focus){
+      if(!data.length){ return; }
+      const rows = data.map(team=>{
+        const winRate = team.wins/team.matches;
+        const xgDiff = (team.xgFor - team.xgAgainst)/team.matches;
+        let trendLabel;
+        let trendClass = '';
+        if(focus==='last5'){
+          trendLabel = `${team.formPointsLast5} pts (last 5)`;
+          if(team.formPointsLast5>=10) trendClass='trend-up';
+          else if(team.formPointsLast5<=5) trendClass='trend-down';
+        }else if(focus==='home'){
+          const val = team.homeWinRate*100;
+          trendLabel = `Home W% ${val.toFixed(0)}%`;
+          if(val>=65) trendClass='trend-up'; else if(val<=40) trendClass='trend-down';
+        }else if(focus==='away'){
+          const val = team.awayWinRate*100;
+          trendLabel = `Away W% ${val.toFixed(0)}%`;
+          if(val>=60) trendClass='trend-up'; else if(val<=35) trendClass='trend-down';
+        }else{
+          const val = winRate*100;
+          trendLabel = `Win % ${val.toFixed(0)}%`;
+          if(val>=65) trendClass='trend-up'; else if(val<=40) trendClass='trend-down';
+        }
+        return `<tr>
+          <td><strong>${escapeHtml(team.team)}</strong><div class="mini">${escapeHtml(team.league)}</div></td>
+          <td>${team.wins}-${team.draws}-${team.losses}</td>
+          <td>${(winRate*100).toFixed(1)}%</td>
+          <td>${team.goalsFor} / ${team.goalsAgainst}</td>
+          <td>${formatSignedNumber(xgDiff,2)}</td>
+          <td>${escapeHtml(team.lastFive)}</td>
+          <td class="${trendClass}">${trendLabel}</td>
+        </tr>`;
+      }).join('');
+      performanceEls.table.innerHTML = `<table>
+        <thead><tr><th>Team</th><th>Record</th><th>Win %</th><th>Goals (F/A)</th><th>xG Diff</th><th>Form</th><th>Trend</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    }
+    function playerFocusMetric(player, focus){
+      if(focus==='last5') return player.last5Goals + player.last5Assists*0.7;
+      if(focus==='shots') return player.shotsPer90;
+      if(focus==='finishing') return player.conversion;
+      return player.goals + player.assists*0.7;
+    }
+    function renderPlayerStats(data){
+      if(!data.length){
+        performanceEls.stats.innerHTML = '<div class="card"><div class="k">Players</div><div class="v">0</div></div>';
+        performanceEls.table.innerHTML = '<div class="mini" style="padding:12px">No players match the current filters.</div>';
+        return;
+      }
+      const totalMinutes = data.reduce((sum,p)=>sum+p.minutes,0);
+      const totalGoals = data.reduce((sum,p)=>sum+p.goals,0);
+      const totalAssists = data.reduce((sum,p)=>sum+p.assists,0);
+      const avgShots = data.reduce((sum,p)=>sum+p.shotsPer90,0)/data.length;
+      const avgForm = data.reduce((sum,p)=>sum+p.formRating,0)/data.length;
+      const avgConversion = data.reduce((sum,p)=>sum+p.conversion,0)/data.length;
+      const card = (k,v)=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+      const goals90 = totalMinutes ? (totalGoals/(totalMinutes/90)) : 0;
+      const assists90 = totalMinutes ? (totalAssists/(totalMinutes/90)) : 0;
+      performanceEls.stats.innerHTML = [
+        card('Players', data.length),
+        card('Goals / 90', goals90.toFixed(2)),
+        card('Assists / 90', assists90.toFixed(2)),
+        card('Shots / 90', avgShots.toFixed(2)),
+        card('Form rating', avgForm.toFixed(1)),
+        card('Conversion', `${(avgConversion*100).toFixed(1)}%`)
+      ].join('');
+    }
+    function renderPlayerTable(data, focus){
+      if(!data.length){ return; }
+      const rows = data.map(player=>{
+        const minutes = player.minutes || (player.matches*90);
+        const goalsPer90 = minutes ? (player.goals/(minutes/90)) : 0;
+        const assistsPer90 = minutes ? (player.assists/(minutes/90)) : 0;
+        const conversion = player.conversion*100;
+        let trendLabel;
+        let trendClass = player.trend==='hot' ? 'trend-up' : player.trend==='cold' ? 'trend-down' : '';
+        if(focus==='last5'){
+          trendLabel = `Last 5: ${player.last5Goals}G / ${player.last5Assists}A`;
+        }else if(focus==='shots'){
+          trendLabel = `Shots/90 ${player.shotsPer90.toFixed(1)}`;
+        }else if(focus==='finishing'){
+          trendLabel = `Conversion ${conversion.toFixed(1)}%`;
+          if(conversion>=26) trendClass='trend-up';
+          else if(conversion<=15) trendClass='trend-down';
+        }else{
+          trendLabel = `Season G+A ${player.goals + player.assists}`;
+        }
+        return `<tr>
+          <td><strong>${escapeHtml(player.player)}</strong><div class="mini">${escapeHtml(player.team)}</div></td>
+          <td>${escapeHtml(player.position)}</td>
+          <td>${player.goals} / ${player.assists}</td>
+          <td>${player.shotsPer90.toFixed(1)}</td>
+          <td>${player.xg.toFixed(1)} / ${player.xa.toFixed(1)}</td>
+          <td>${goalsPer90.toFixed(2)} / ${assistsPer90.toFixed(2)}</td>
+          <td class="${trendClass}">${trendLabel}</td>
+        </tr>`;
+      }).join('');
+      performanceEls.table.innerHTML = `<table>
+        <thead><tr><th>Player</th><th>Role</th><th>G / A</th><th>Shots/90</th><th>xG / xA</th><th>Per 90 (G/A)</th><th>Trend</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    }
+    function confidenceLabel(conf){
+      switch(conf){
+        case 'elite': return 'Elite edge';
+        case 'strong': return 'Strong edge';
+        case 'speculative': return 'Speculative';
+        case 'monitor': return 'Market watch';
+        case 'custom': return 'User model';
+        default: return 'Market';
+      }
+    }
+    function syncOddsFilters(){
+      const leagues = uniqueValues(oddsUniverse,'league');
+      const markets = uniqueValues(oddsUniverse,'market');
+      const prevLeague = oddsEls.league.value || 'all';
+      const prevMarket = oddsEls.market.value || 'all';
+      oddsEls.league.innerHTML = optionsMarkup(leagues, 'All leagues');
+      oddsEls.market.innerHTML = optionsMarkup(markets, 'All markets');
+      if(leagues.includes(prevLeague)) oddsEls.league.value = prevLeague; else oddsEls.league.value = 'all';
+      if(markets.includes(prevMarket)) oddsEls.market.value = prevMarket; else oddsEls.market.value = 'all';
+    }
+    function renderOddsTable(){
+      let data = oddsUniverse.slice();
+      const league = oddsEls.league.value || 'all';
+      const market = oddsEls.market.value || 'all';
+      const sort = oddsEls.sort.value || 'edge-desc';
+      const show = oddsEls.show.value || 'all';
+      if(league!=='all') data = data.filter(sel=>sel.league===league);
+      if(market!=='all') data = data.filter(sel=>sel.market===market);
+      if(show==='positive') data = data.filter(sel=>calcEdgeValue(sel.modelProb, sel.odds)>0);
+      if(show==='negative') data = data.filter(sel=>calcEdgeValue(sel.modelProb, sel.odds)<0);
+      if(sort==='edge-asc'){
+        data.sort((a,b)=>calcEdgeValue(a.modelProb,a.odds)-calcEdgeValue(b.modelProb,b.odds));
+      }else if(sort==='time'){
+        data.sort((a,b)=>new Date(a.kickoff||0) - new Date(b.kickoff||0));
+      }else{
+        data.sort((a,b)=>calcEdgeValue(b.modelProb,b.odds)-calcEdgeValue(a.modelProb,a.odds));
+      }
+      if(!data.length){
+        oddsEls.tableBody.innerHTML = '<tr><td colspan="9" style="padding:14px;text-align:center;color:var(--muted)">No markets to display for this filter.</td></tr>';
+        return;
+      }
+      oddsEls.tableBody.innerHTML = data.map(sel=>{
+        const implied = impliedFromOdds(sel.odds);
+        const edge = calcEdgeValue(sel.modelProb, sel.odds);
+        const highlight = edge>0 ? 'highlight' : '';
+        const conf = confidenceLabel(sel.confidence);
+        return `<tr class="${highlight}">
+          <td><strong>${escapeHtml(sel.event)}</strong><div class="mini">${escapeHtml(sel.league)}</div></td>
+          <td>${escapeHtml(sel.market)}</td>
+          <td>${escapeHtml(sel.selection)}</td>
+          <td>${sel.odds.toFixed(2)}</td>
+          <td>${percent(implied)}</td>
+          <td>${percent(sel.modelProb)}</td>
+          <td>${formatSignedPercentDecimal(edge)}</td>
+          <td><span class="badge">${escapeHtml(conf)}</span></td>
+          <td>${formatDateTime(sel.kickoff)}</td>
+        </tr>`;
+      }).join('');
+    }
+    function activateSection(id){
+      navEls.sections.forEach(sec=>sec.classList.toggle('active', sec.id===id));
+      navEls.buttons.forEach(btn=>btn.classList.toggle('active', btn.dataset.section===id));
+      if(STORAGE_OK) safeSet(SECTION_KEY, id);
+    }
+    const savedSection = STORAGE_OK ? localStorage.getItem(SECTION_KEY) : null;
     function bind(){
       els.form.addEventListener('submit', addOrUpdate);
       els.resetBtn.addEventListener('click', resetForm);
@@ -310,12 +1435,71 @@
       els.btnExportJson.addEventListener('click', exportJSON);
       els.fileCsv.addEventListener('change', e=>{ const f=e.target.files && e.target.files[0]; if(f) importCSV(f); e.target.value=''; });
       els.fileJson.addEventListener('change', e=>{ const f=e.target.files && e.target.files[0]; if(f) restoreJSON(f); e.target.value=''; });
+
+      navEls.buttons.forEach(btn=>btn.addEventListener('click', ()=>activateSection(btn.dataset.section)));
+
+      valueEls.form.addEventListener('submit', handleValueSubmit);
+      valueEls.reset.addEventListener('click', ()=>{ resetValueForm(); });
+      valueEls.leagueFilter.addEventListener('change', renderValueModule);
+      valueEls.marketFilter.addEventListener('change', renderValueModule);
+      valueEls.timeFilter.addEventListener('change', renderValueModule);
+      valueEls.edgeFilter.addEventListener('input', renderValueModule);
+
+      builderEls.leagueFilter.addEventListener('change', renderBuilderSelections);
+      builderEls.marketFilter.addEventListener('change', renderBuilderSelections);
+      builderEls.confidenceFilter.addEventListener('change', renderBuilderSelections);
+      builderEls.selectionList.addEventListener('click', e=>{
+        const btn = e.target.closest('button[data-action="add-leg"]');
+        if(btn) addBuilderLeg(btn.dataset.id);
+      });
+      builderEls.slip.addEventListener('click', e=>{
+        const btn = e.target.closest('button[data-action="remove-leg"]');
+        if(btn) removeBuilderLeg(btn.dataset.id);
+      });
+      builderEls.clear.addEventListener('click', ()=>{
+        builderState.slip = [];
+        renderBuilderSlip();
+        renderBuilderSelections();
+      });
+      builderEls.stake.addEventListener('input', updateBuilderSummary);
+
+      performanceEls.view.addEventListener('change', ()=>{
+        syncPerformanceFormOptions();
+        syncPerformanceLeagueOptions();
+        renderPerformance();
+      });
+      performanceEls.form.addEventListener('change', renderPerformance);
+      performanceEls.league.addEventListener('change', renderPerformance);
+      performanceEls.search.addEventListener('input', ()=>renderPerformance());
+
+      oddsEls.league.addEventListener('change', renderOddsTable);
+      oddsEls.market.addEventListener('change', renderOddsTable);
+      oddsEls.sort.addEventListener('change', renderOddsTable);
+      oddsEls.show.addEventListener('change', renderOddsTable);
     }
 
     function renderAll(){ renderTable(); renderStats(); }
 
     // Init
-    load(); bind(); resetForm(); renderAll();
+    load();
+    bind();
+    resetForm();
+    renderAll();
+    syncValueFilters();
+    renderValueModule();
+    syncBuilderFilters();
+    renderBuilderSelections();
+    renderBuilderSlip();
+    syncPerformanceFormOptions();
+    syncPerformanceLeagueOptions();
+    renderPerformance();
+    syncOddsFilters();
+    renderOddsTable();
+    if(savedSection && navEls.sections.some(sec=>sec.id===savedSection)){
+      activateSection(savedSection);
+    }else{
+      activateSection('tracker');
+    }
   </script>
 </body>
 </html>
