@@ -3,130 +3,774 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bet Tracker — Safari Safe</title>
-  <meta name="theme-color" content="#0f172a">
+  <title>Bet Tracker Command Center</title>
+  <meta name="theme-color" content="#050b16">
   <style>
     :root{
-      --bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#94a3b8;--accent:#60a5fa;--accent2:#38bdf8;
-      --danger:#ef4444;--success:#34d399;--border:#1f2937;--chip:#1f2937;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --bg:#040916;--bg-soft:#060d1d;--surface:#0b162c;--surface-strong:#13203b;--surface-glow:#16284b;
+      --ink:#f8fafc;--muted:#94a3b8;--muted-strong:#cbd5f5;--accent:#38bdf8;--accent-strong:#60a5fa;
+      --danger:#f87171;--success:#34d399;--warning:#fbbf24;--border:#1f2a3f;--chip:#1d2842;
+      font-family:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     }
-    *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,var(--bg),#020617);color:var(--ink);padding:16px}
-    .container{max-width:980px;margin:0 auto}
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-    h1{font-size:20px;margin:0}
-    .sub{color:var(--muted);font-size:12px}
-    .wrap{background:linear-gradient(180deg,var(--card),#0b1220);border:1px solid var(--border);border-radius:14px;padding:14px}
-    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
-    label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);min-width:120px;flex:1}
-    input, select, textarea{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#0b1220;color:var(--ink)}
-    textarea{min-height:48px;resize:vertical}
-    .actions{display:flex;gap:8px;flex-wrap:wrap}
-    button{appearance:none;border:1px solid var(--border);background:#0b1220;color:var(--ink);padding:10px 12px;border-radius:10px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
-    button.small{padding:6px 8px;border-radius:8px;font-size:13px}
-    button.primary{background:linear-gradient(180deg,#1d4ed8,#1e40af);border-color:#1e3a8a}
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(140% 120% at 0% 0%,#1f3b61 0%,#050b16 55%,#020510 100%);color:var(--ink);display:flex;min-height:100vh;overflow:hidden}
+    .app-shell{display:flex;flex:1;max-width:1400px;margin:0 auto;width:100%;background:rgba(2,8,23,0.72);backdrop-filter:blur(28px);border:1px solid rgba(56,189,248,0.07);box-shadow:0 25px 70px rgba(15,23,42,0.45);border-radius:28px;overflow:hidden;margin-top:18px;margin-bottom:18px}
+    .sidebar{width:260px;background:linear-gradient(180deg,#070d1f 0%,#040814 100%);border-right:1px solid rgba(96,165,250,0.08);display:flex;flex-direction:column;gap:24px;padding:28px 24px}
+    .brand{display:flex;flex-direction:column;gap:6px}
+    .brand .badge{align-self:flex-start;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.35);color:var(--accent);padding:4px 10px;border-radius:999px;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+    .brand h1{margin:0;font-size:20px;letter-spacing:.02em}
+    .brand p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+    .primary-nav{display:flex;flex-direction:column;gap:10px}
+    .primary-nav button{appearance:none;border:1px solid transparent;background:rgba(15,23,42,0.45);color:var(--muted-strong);padding:12px 16px;border-radius:14px;cursor:pointer;font-size:14px;letter-spacing:.01em;display:flex;align-items:center;gap:10px;transition:all .2s ease}
+    .primary-nav button .dot{width:8px;height:8px;border-radius:50%;background:rgba(148,163,184,.4);box-shadow:0 0 0 4px rgba(15,23,42,0.4)}
+    .primary-nav button:hover{border-color:rgba(56,189,248,0.4);color:var(--ink)}
+    .primary-nav button.active{background:linear-gradient(135deg,rgba(37,99,235,0.9),rgba(14,165,233,0.9));color:var(--ink);border-color:rgba(56,189,248,0.75);box-shadow:0 12px 24px rgba(59,130,246,0.18)}
+    .primary-nav button.active .dot{background:#fff;box-shadow:0 0 0 4px rgba(148,163,184,0.18)}
+    .sidebar-footer{margin-top:auto;font-size:12px;color:var(--muted);display:grid;gap:16px}
+    .sidebar-footer strong{color:var(--accent)}
+    .sidebar-footer .progress{display:flex;flex-direction:column;gap:6px}
+    .progress-bar{height:6px;border-radius:999px;background:rgba(148,163,184,0.2);overflow:hidden}
+    .progress-bar span{display:block;height:100%;background:linear-gradient(90deg,rgba(56,189,248,0.9),rgba(14,165,233,0.6));width:68%}
+    .main{flex:1;display:flex;flex-direction:column;padding:32px 36px;overflow-y:auto;position:relative}
+    .topbar{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+    .topbar-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+    .topbar h2{margin:0;font-size:26px;letter-spacing:.02em}
+    .topbar .sub{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.5;max-width:600px}
+    .topbar-nav{display:flex;flex-wrap:wrap;gap:10px}
+    .topbar-nav button{background:rgba(15,23,42,0.65);border:1px solid rgba(96,165,250,0.18);color:var(--muted-strong);padding:8px 14px;border-radius:999px;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+    .topbar-nav button.active{background:rgba(59,130,246,0.16);color:var(--ink);border-color:rgba(59,130,246,0.45)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    button{appearance:none;border:1px solid rgba(148,163,184,0.25);background:rgba(15,23,42,0.55);color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;font-size:13px;transition:all .2s ease}
+    button.small{padding:7px 10px;border-radius:10px;font-size:12px}
+    button.primary{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-color:rgba(59,130,246,0.6)}
+    button:hover{border-color:rgba(59,130,246,0.45);color:var(--muted-strong)}
     .icon{width:16px;height:16px;fill:currentColor}
-    .section-title{display:flex;gap:8px;align-items:center;color:var(--muted);font-weight:600;margin:4px 0 10px}
+    .topline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:28px}
+    .topline-card{background:linear-gradient(135deg,rgba(15,23,42,0.85),rgba(30,58,138,0.65));border:1px solid rgba(59,130,246,0.25);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px}
+    .topline-card .k{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+    .topline-card .v{font-size:24px;font-weight:700}
+    .page-hero{background:linear-gradient(135deg,rgba(37,99,235,0.16),rgba(14,165,233,0.08));border:1px solid rgba(59,130,246,0.18);border-radius:22px;padding:22px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}
+    .page-hero h3{margin:0;font-size:20px}
+    .page-hero p{margin:6px 0 0;color:var(--muted);font-size:14px;max-width:560px;line-height:1.6}
+    .page-hero .hero-meta{display:flex;gap:14px;flex-wrap:wrap}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(56,189,248,0.12);color:var(--accent);border:1px solid rgba(56,189,248,0.25);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+    .chip .dot{width:6px;height:6px;border-radius:999px;background:var(--accent)}
+    .chip.online{background:rgba(52,211,153,0.16);border-color:rgba(52,211,153,0.35);color:var(--success)}
+    .chip.online .dot{background:var(--success)}
+    .chip.offline{background:rgba(248,113,113,0.12);border-color:rgba(248,113,113,0.32);color:var(--danger)}
+    .chip.offline .dot{background:var(--danger)}
+    .wrap{background:linear-gradient(180deg,var(--surface) 0%,#0b1428 100%);border:1px solid rgba(59,130,246,0.15);border-radius:20px;padding:22px;display:grid;gap:22px}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+    @media (max-width:1100px){.app-shell{flex-direction:column;max-width:100%;margin:0;border-radius:0;border:none;box-shadow:none}.sidebar{width:auto;flex-direction:row;align-items:center;justify-content:space-between;padding:18px 20px;gap:20px;border-right:none;border-bottom:1px solid rgba(96,165,250,0.08)}.brand{flex:1}.primary-nav{flex-direction:row;flex-wrap:wrap;flex:2;justify-content:center}.primary-nav button{flex:1 1 120px}.sidebar-footer{display:none}.main{padding:24px 18px}.topline{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.page-hero{flex-direction:column}.topbar{flex-direction:column}.actions{align-self:flex-start}}
+    label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);min-width:120px;flex:1}
+    input,select,textarea{padding:10px 12px;border:1px solid rgba(148,163,184,0.22);border-radius:12px;background:rgba(15,23,42,0.6);color:var(--ink);font-size:14px}
+    textarea{min-height:52px;resize:vertical}
+    .section-title{display:flex;gap:10px;align-items:center;color:var(--muted-strong);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
     table{width:100%;border-collapse:collapse;margin-top:8px}
-    th,td{padding:10px 8px;border-bottom:1px solid var(--border);font-size:14px}
-    th{text-align:left;color:var(--muted)}
-    .tag{font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:999px;display:inline-block}
-    .win{color:#065f46;background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3)}
-    .loss{color:#7f1d1d;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25)}
-    .pending{color:#1e3a8a;background:rgba(96,165,250,.12);border-color:rgba(96,165,250,.3)}
-    .push{color:#78350f;background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25)}
-    .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
-    @media (max-width:900px){.stat-cards{grid-template-columns:repeat(2,1fr)}}
-    .card{background:#0b1220;border:1px solid var(--border);border-radius:12px;padding:12px}
-    .card .k{color:var(--muted);font-size:12px}
-    .card .v{font-size:18px;font-weight:700;margin-top:2px}
-    .banner{position:sticky;top:0;margin:0 0 10px 0;padding:10px 12px;border-radius:12px;background:#3f1d1d;border:1px solid rgba(239,68,68,.4);color:#fee2e2}
-    .tips{font-size:12px;color:var(--muted);margin-top:8px}
+    th,td{padding:12px 10px;border-bottom:1px solid rgba(148,163,184,0.12);font-size:13px}
+    th{text-align:left;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+    .tag{font-size:12px;padding:4px 10px;border:1px solid rgba(148,163,184,0.2);border-radius:999px;display:inline-block;background:rgba(15,23,42,0.6)}
+    .win{color:var(--success);border-color:rgba(52,211,153,0.4);background:rgba(15,118,110,0.18)}
+    .loss{color:var(--danger);border-color:rgba(248,113,113,0.45);background:rgba(127,29,29,0.18)}
+    .pending{color:var(--accent-strong);border-color:rgba(56,189,248,0.45);background:rgba(14,116,144,0.18)}
+    .push{color:var(--warning);border-color:rgba(251,191,36,0.35);background:rgba(180,83,9,0.14)}
+    .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px}
+    .card{background:rgba(15,23,42,0.55);border:1px solid rgba(59,130,246,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px}
+    .card .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .card .v{font-size:18px;font-weight:700}
+    .banner{position:sticky;top:0;margin:0 0 16px;padding:14px 16px;border-radius:14px;background:rgba(127,29,29,0.32);border:1px solid rgba(248,113,113,0.5);color:#fecaca;font-size:13px}
+    .tips{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+    .table-controls,.filters-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid rgba(59,130,246,0.24);font-size:12px;background:rgba(56,189,248,0.12);color:var(--muted-strong)}
+    .value-table tbody tr.positive{background:rgba(34,197,94,0.08)}
+    .value-table tbody tr.negative{background:rgba(239,68,68,0.06)}
+    .module-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+    @media (max-width:1100px){.module-grid{grid-template-columns:1fr}}
+    .selection-list{display:grid;gap:14px}
+    .selection-card{border:1px solid rgba(59,130,246,0.18);border-radius:18px;padding:16px;background:rgba(10,17,34,0.75);display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 40px rgba(15,23,42,0.25)}
+    .selection-card header{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+    .selection-card strong{font-size:16px;color:var(--ink)}
+    .selection-card footer{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+    .selection-card button{align-self:flex-start}
+    .slip{border:1px solid rgba(59,130,246,0.18);border-radius:18px;padding:18px;background:rgba(10,17,34,0.8);display:flex;flex-direction:column;gap:12px}
+    .slip ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+    .slip li{border:1px solid rgba(59,130,246,0.16);border-radius:14px;padding:12px;font-size:13px;display:flex;flex-direction:column;gap:6px;background:rgba(15,23,42,0.65)}
+    .slip li .meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+    .performance-grid{display:grid;gap:14px;margin-top:12px}
+    .badge{padding:5px 10px;border-radius:999px;font-size:11px;background:rgba(96,165,250,0.18);border:1px solid rgba(96,165,250,0.32);color:var(--accent)}
+    .trend-up{color:var(--success)}
+    .trend-down{color:var(--danger)}
+    .mini{font-size:11px;color:var(--muted)}
+    .odds-table tbody tr.highlight{box-shadow:0 0 0 1px rgba(56,189,248,0.45)}
+    .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .alerts-layout{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+    @media (max-width:1100px){.alerts-layout{grid-template-columns:1fr}}
+    .alerts-feed{display:grid;gap:14px}
+    .alert-card{border:1px solid rgba(56,189,248,0.2);border-radius:18px;padding:16px;background:rgba(10,19,36,0.82);display:grid;gap:10px;position:relative;overflow:hidden}
+    .alert-card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(120deg,rgba(59,130,246,0.12),transparent 60%);opacity:0;transition:opacity .2s}
+    .alert-card:hover::after{opacity:1}
+    .alert-meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+    .alert-body{display:flex;flex-direction:column;gap:8px}
+    .alert-body strong{font-size:15px}
+    .severity{padding:4px 10px;border-radius:999px;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+    .severity.high{background:rgba(248,113,113,0.18);color:var(--danger);border:1px solid rgba(248,113,113,0.4)}
+    .severity.medium{background:rgba(251,191,36,0.14);color:var(--warning);border:1px solid rgba(251,191,36,0.35)}
+    .severity.low{background:rgba(52,211,153,0.16);color:var(--success);border:1px solid rgba(52,211,153,0.32)}
+    .watchlist{border:1px solid rgba(59,130,246,0.18);border-radius:18px;padding:18px;background:rgba(10,17,34,0.75);display:grid;gap:16px}
+    .watchlist h4{margin:0;font-size:16px}
+    .watchlist table th,.watchlist table td{font-size:12px}
+    .watchlist table th{letter-spacing:.05em}
+    .watchlist table td:last-child{text-align:right}
+    .alerts-summary{font-size:12px;color:var(--muted)}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+    .status-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;border:1px solid rgba(59,130,246,0.24);background:rgba(15,23,42,0.55)}
+    .status-pill .dot{width:6px;height:6px;border-radius:50%}
+    .status-pill.connected{border-color:rgba(52,211,153,0.35);background:rgba(15,118,110,0.2)}
+    .status-pill.connected .dot{background:var(--success)}
+    .status-pill.error{border-color:rgba(248,113,113,0.4);background:rgba(127,29,29,0.28)}
+    .status-pill.error .dot{background:var(--danger)}
+    .integration-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+    .integration-card{border:1px solid rgba(59,130,246,0.18);border-radius:18px;padding:18px;background:rgba(10,19,36,0.82);display:flex;flex-direction:column;gap:12px;box-shadow:0 22px 42px rgba(8,23,56,0.35)}
+    .integration-card header{display:flex;justify-content:space-between;align-items:center}
+    .integration-card h4{margin:0;font-size:16px}
+    .integration-card footer{display:flex;gap:8px;flex-wrap:wrap}
+    .integration-card footer button{flex:1 1 auto}
+    .integration-card .status{font-size:12px;color:var(--muted)}
+    .integrations-log{margin-top:22px;border:1px solid rgba(59,130,246,0.16);border-radius:16px;padding:16px;background:rgba(10,17,34,0.75);max-height:220px;overflow:auto;font-size:12px;color:var(--muted)}
+    .integrations-log ul{margin:0;padding-left:18px}
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="banner" class="banner" style="display:none"></div>
-    <header>
-      <div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="badge">Edge OS</span>
         <h1>Bet Tracker</h1>
-        <div class="sub">Local-first • Offline • CSV/JSON backup</div>
+        <p>Command center for your models, value detection, and smart alerts inspired by the Odd Alerts ethos.</p>
       </div>
-      <div class="actions">
-        <button id="btn-export" title="Export CSV">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v10l3.5-3.5 1.4 1.4L12 17l-4.9-6.1 1.4-1.4L12 13V3zM5 19h14v2H5z"/></svg>CSV
-        </button>
-        <button id="btn-export-json" title="Export JSON">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M7 4h10v2H7V4zm0 14h10v2H7v-2zM4 8h2v8H4V8zm14 0h2v8h-2V8z"/></svg>JSON
-        </button>
-        <label class="small" title="Import CSV">
-          <input id="file-csv" type="file" accept=".csv" style="display:none">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M12 21v-10l-3.5 3.5-1.4-1.4L12 7l4.9 6.1-1.4 1.4L12 11v10zM5 3h14v2H5z"/></svg>Import CSV
-        </label>
-        <label class="small" title="Restore JSON">
-          <input id="file-json" type="file" accept="application/json,.json" style="display:none">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M12 6V3l5 4-5 4V8C8.7 8 6 10.7 6 14s2.7 6 6 6 6-2.7 6-6h2c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8z"/></svg>Restore JSON
-        </label>
+      <nav class="primary-nav">
+        <button data-section="tracker" class="active"><span class="dot"></span>Journal</button>
+        <button data-section="value"><span class="dot"></span>Value Lab</button>
+        <button data-section="trends"><span class="dot"></span>Trend Radar</button>
+        <button data-section="builder"><span class="dot"></span>Slip Builder</button>
+        <button data-section="performance"><span class="dot"></span>Performance Hub</button>
+        <button data-section="odds"><span class="dot"></span>Odds Matrix</button>
+        <button data-section="alerts"><span class="dot"></span>Alert Center</button>
+        <button data-section="live"><span class="dot"></span>In-Play Pulse</button>
+        <button data-section="integrations"><span class="dot"></span>API Integrations</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="progress">
+          <strong>Daily scan completion</strong>
+          <div class="progress-bar"><span></span></div>
+          <span>6 of 9 markets reviewed</span>
+        </div>
+        <div>
+          <strong>Sync tips</strong>
+          <div class="mini">Add to Home Screen in Safari or Chrome for instant launch and offline storage.</div>
+        </div>
       </div>
-    </header>
-
-    <div class="wrap">
-      <div class="grid">
-        <section>
-          <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>New / Edit Bet</div>
-          <form id="bet-form" autocomplete="off">
-            <input type="hidden" id="bet-id" value="">
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <label>Date <input type="date" id="bet-date" required></label>
-              <label>Sport <input type="text" id="bet-sport" placeholder="e.g. Football"></label>
-              <label>Event <input type="text" id="bet-event" required placeholder="Home vs Away"></label>
-            </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
-              <label>Stake <input type="number" id="bet-stake" step="0.01" min="0" required></label>
-              <label>Odds (decimal) <input type="number" id="bet-odds" step="0.01" min="1" required></label>
-              <label>Result
-                <select id="bet-result">
-                  <option value="pending">Pending</option>
-                  <option value="win">Win</option>
-                  <option value="loss">Loss</option>
-                  <option value="push">Push</option>
-                </select>
-              </label>
-            </div>
-            <label style="margin-top:8px">Notes <textarea id="bet-notes" placeholder="Optional notes"></textarea></label>
-            <div class="actions" style="margin-top:10px">
-              <button id="save-btn" class="primary" type="submit">Save Bet</button>
-              <button id="reset-btn" type="button">Reset</button>
-            </div>
-          </form>
-        </section>
-        <section>
-          <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v2H4zM4 10h16v2H4zM4 16h16v2H4z"/></svg>Stats</div>
-          <div id="stats" class="stat-cards"></div>
-          <div class="tips">Tip: for persistence on iOS, open this in Safari via http/https (GitHub Pages or a local server). Private Browsing can disable storage.</div>
-        </section>
+    </aside>
+    <main class="main">
+      <div id="banner" class="banner" style="display:none"></div>
+      <header class="topbar">
+        <div class="topbar-heading">
+          <div>
+            <h2>Analytics &amp; Alert Ops</h2>
+            <div class="sub">Monitor price movements, compare models, and record every wager with a clean Odd Alerts inspired skin.</div>
+          </div>
+          <div class="actions">
+            <button id="btn-export" title="Export CSV">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v10l3.5-3.5 1.4 1.4L12 17l-4.9-6.1 1.4-1.4L12 13V3zM5 19h14v2H5z"/></svg>CSV
+            </button>
+            <button id="btn-export-json" title="Export JSON">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M7 4h10v2H7V4zm0 14h10v2H7v-2zM4 8h2v8H4V8zm14 0h2v8h-2V8z"/></svg>JSON
+            </button>
+            <label class="small" title="Import CSV">
+              <input id="file-csv" type="file" accept=".csv" style="display:none">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 21v-10l-3.5 3.5-1.4-1.4L12 7l4.9 6.1-1.4 1.4L12 11v10zM5 3h14v2H5z"/></svg>Import CSV
+            </label>
+            <label class="small" title="Restore JSON">
+              <input id="file-json" type="file" accept="application/json,.json" style="display:none">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 6V3l5 4-5 4V8C8.7 8 6 10.7 6 14s2.7 6 6 6 6-2.7 6-6h2c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8z"/></svg>Restore JSON
+            </label>
+          </div>
+        </div>
+        <div class="topbar-nav" id="topbar-nav"></div>
+      </header>
+      <div class="topline">
+        <div class="topline-card">
+          <span class="k">Active alerts</span>
+          <span class="v" id="top-active-alerts">0</span>
+          <span class="mini">Steam &amp; price change triggers live</span>
+        </div>
+        <div class="topline-card">
+          <span class="k">Positive edges</span>
+          <span class="v" id="top-positive-edges">0</span>
+          <span class="mini">Opportunities above market consensus</span>
+        </div>
+        <div class="topline-card">
+          <span class="k">Watchlist sync</span>
+          <span class="v">3 models</span>
+          <span class="mini">Closing line, injury feed, pace tracker</span>
+        </div>
       </div>
 
-      <div style="height:1px;background:var(--border);margin:10px 0"></div>
-
-      <section>
-        <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4zM4 12h16v2H4zM4 18h10v2H4z"/></svg>Bets</div>
-        <div style="overflow-x:auto">
-          <table id="bets-table">
-            <thead><tr>
-              <th>Date</th><th>Sport</th><th>Event</th><th>Stake</th><th>Odds</th><th>Result</th><th>Profit</th><th>Notes</th><th>Actions</th>
-            </tr></thead>
-            <tbody></tbody>
-          </table>
+      <section id="tracker" class="app-section active">
+        <div class="page-hero">
+          <div>
+            <h3>Wager Journal</h3>
+            <p>Keep a pristine record of every stake, outcome, and thought process. Surface ROI and win rates instantly.</p>
+            <div class="hero-meta">
+              <span class="chip"><span class="dot"></span>Local first storage</span>
+              <span class="chip"><span class="dot"></span>CSV &amp; JSON export</span>
+            </div>
+          </div>
+          <div class="card" style="min-width:180px">
+            <div class="k">Current streak</div>
+            <div class="v" id="tracker-streak">0</div>
+            <div class="mini">Auto-updates from your ledger</div>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="grid">
+            <section>
+              <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>New / Edit Bet</div>
+              <form id="bet-form" autocomplete="off">
+                <input type="hidden" id="bet-id" value="">
+                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                  <label>Date <input type="date" id="bet-date" required></label>
+                  <label>Sport <input type="text" id="bet-sport" placeholder="e.g. Football"></label>
+                  <label>Event <input type="text" id="bet-event" required placeholder="Home vs Away"></label>
+                </div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+                  <label>Stake <input type="number" id="bet-stake" step="0.01" min="0" required></label>
+                  <label>Odds (decimal) <input type="number" id="bet-odds" step="0.01" min="1" required></label>
+                  <label>Result
+                    <select id="bet-result">
+                      <option value="pending">Pending</option>
+                      <option value="win">Win</option>
+                      <option value="loss">Loss</option>
+                      <option value="push">Push</option>
+                    </select>
+                  </label>
+                </div>
+                <label style="margin-top:10px">Notes <textarea id="bet-notes" placeholder="Optional notes"></textarea></label>
+                <div class="actions" style="margin-top:14px">
+                  <button id="save-btn" class="primary" type="submit">Save Bet</button>
+                  <button id="reset-btn" type="button">Reset</button>
+                </div>
+              </form>
+            </section>
+            <section>
+              <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v2H4zM4 10h16v2H4zM4 16h16v2H4z"/></svg>Ledger insights</div>
+              <div id="stats" class="stat-cards"></div>
+              <div class="tips">Tip: For persistence on iOS, open this over http/https (GitHub Pages or a local server). Private browsing can disable storage.</div>
+            </section>
+          </div>
+          <section>
+            <div class="section-title"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4zM4 12h16v2H4zM4 18h10v2H4z"/></svg>Bets</div>
+            <div style="overflow-x:auto">
+              <table id="bets-table">
+                <thead><tr>
+                  <th>Date</th><th>Sport</th><th>Event</th><th>Stake</th><th>Odds</th><th>Result</th><th>Profit</th><th>Notes</th><th>Actions</th>
+                </tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
         </div>
       </section>
-    </div>
+
+      <section id="value" class="app-section">
+        <div class="page-hero">
+          <div>
+            <h3>Value Betting Lab</h3>
+            <p>Blend your projections with curated fixtures. Slide filters and spot overlays in seconds just like the Odd Alerts market scanner.</p>
+          </div>
+          <div class="hero-meta">
+            <span class="chip"><span class="dot"></span>Custom projections</span>
+            <span class="chip"><span class="dot"></span>Edge spotlight</span>
+            <span class="chip offline" data-api-status="odds"><span class="dot"></span>Odds API offline</span>
+          </div>
+        </div>
+        <div class="wrap">
+          <form id="value-form" class="split" autocomplete="off">
+            <label>Event <input type="text" id="value-event" placeholder="e.g. Arsenal vs Chelsea" required></label>
+            <label>League <input type="text" id="value-league" placeholder="e.g. Premier League"></label>
+            <label>Market <input type="text" id="value-market" placeholder="e.g. Match Odds" required></label>
+            <label>Selection <input type="text" id="value-selection" placeholder="e.g. Arsenal" required></label>
+            <label>Decimal Odds <input type="number" id="value-odds" min="1" step="0.01" required></label>
+            <label>Model Probability (%) <input type="number" id="value-prob" min="1" max="100" step="0.1" required></label>
+            <label>Stake (£) <input type="number" id="value-stake" min="1" step="1" value="10"></label>
+            <label>Kick-off <input type="datetime-local" id="value-kickoff"></label>
+            <label style="grid-column:1/-1">Context <textarea id="value-notes" placeholder="Key angles, injuries, trends"></textarea></label>
+            <div class="actions" style="grid-column:1/-1">
+              <button class="primary" type="submit">Add Projection</button>
+              <button type="button" id="value-reset">Reset</button>
+            </div>
+          </form>
+
+          <div class="stat-cards" id="value-stats"></div>
+
+          <div class="table-controls">
+            <label>League
+              <select id="value-league-filter"></select>
+            </label>
+            <label>Market
+              <select id="value-market-filter"></select>
+            </label>
+            <label>Minimum Edge (%)
+              <input type="range" id="value-edge-filter" min="0" max="25" step="0.5" value="0">
+            </label>
+            <label>Time horizon
+              <select id="value-time-filter">
+                <option value="all">All upcoming</option>
+                <option value="24">Next 24 hours</option>
+                <option value="72">Next 3 days</option>
+                <option value="168">Next 7 days</option>
+              </select>
+            </label>
+            <div class="pill" id="value-edge-display">Edge ≥ 0.0%</div>
+          </div>
+
+          <div style="overflow-x:auto">
+            <table class="value-table" id="value-table">
+              <thead>
+                <tr>
+                  <th>Fixture</th>
+                  <th>Market</th>
+                  <th>Selection</th>
+                  <th>Odds</th>
+                  <th>Model Prob.</th>
+                  <th>Implied Prob.</th>
+                  <th>Edge</th>
+                  <th>EV (£)</th>
+                  <th>Kick-off</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="trends" class="app-section">
+        <div class="page-hero">
+          <div>
+            <h3>Trend Radar</h3>
+            <p>Scan league-wide streaks, price deltas, and bookmaker consensus to mirror Odd Alerts trend exploration.</p>
+          </div>
+          <div class="hero-meta">
+            <span class="chip"><span class="dot"></span>League tiers</span>
+            <span class="chip"><span class="dot"></span>Time filters</span>
+            <span class="chip offline" data-api-status="odds"><span class="dot"></span>Odds API offline</span>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="table-controls">
+            <label>Trend type
+              <select id="trends-type">
+                <option value="all">All trends</option>
+                <option value="homeWins">Home win rate</option>
+                <option value="awayWins">Away win rate</option>
+                <option value="goals">Goals over 2.5</option>
+                <option value="btts">Both teams to score</option>
+              </select>
+            </label>
+            <label>Timeframe
+              <select id="trends-timeframe">
+                <option value="all">All periods</option>
+                <option value="5">Last 5</option>
+                <option value="10">Last 10</option>
+                <option value="season">Season</option>
+              </select>
+            </label>
+            <label>Region
+              <select id="trends-region"></select>
+            </label>
+            <label>Search
+              <input type="search" id="trends-search" placeholder="Club or market">
+            </label>
+          </div>
+          <div class="stat-cards" id="trends-stats"></div>
+          <div style="overflow-x:auto">
+            <table id="trends-table">
+              <thead>
+                <tr>
+                  <th>Fixture / Market</th>
+                  <th>League</th>
+                  <th>Trend</th>
+                  <th>Odds</th>
+                  <th>Implied</th>
+                  <th>Model</th>
+                  <th>Edge</th>
+                  <th>Form</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="builder" class="app-section">
+        <div class="page-hero">
+          <div>
+            <h3>Bet Builder Studio</h3>
+            <p>Craft multi-leg slips with instant price, edge, and EV feedback. Bring the Odd Alerts slip workflow into your own ecosystem.</p>
+          </div>
+          <div class="hero-meta">
+            <span class="chip"><span class="dot"></span>Multi-market</span>
+            <span class="chip"><span class="dot"></span>Confidence tiers</span>
+            <span class="chip offline" data-api-status="stats"><span class="dot"></span>Stats API offline</span>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="table-controls">
+            <label>League
+              <select id="builder-league-filter"></select>
+            </label>
+            <label>Market
+              <select id="builder-market-filter"></select>
+            </label>
+            <label>Confidence tier
+              <select id="builder-confidence-filter">
+                <option value="all">All</option>
+                <option value="elite">Elite</option>
+                <option value="strong">Strong</option>
+                <option value="speculative">Speculative</option>
+              </select>
+            </label>
+          </div>
+          <div class="module-grid">
+            <div class="selection-list" id="builder-selection-list"></div>
+            <aside class="slip">
+              <header style="display:flex;justify-content:space-between;align-items:center">
+                <strong>Slip</strong>
+                <button id="builder-clear" class="small" type="button">Clear</button>
+              </header>
+              <ul id="builder-slip"></ul>
+              <label>Stake (£) <input type="number" id="builder-stake" min="1" step="1" value="10"></label>
+              <div class="card" style="margin:0">
+                <div class="k">Combined Odds</div>
+                <div class="v" id="builder-odds">1.00</div>
+              </div>
+              <div class="card" style="margin:0">
+                <div class="k">Win Probability</div>
+                <div class="v" id="builder-prob">0.0%</div>
+              </div>
+              <div class="card" style="margin:0">
+                <div class="k">Projected Return</div>
+                <div class="v" id="builder-return">£0.00</div>
+              </div>
+              <div class="card" style="margin:0">
+                <div class="k">Edge vs Market</div>
+                <div class="v" id="builder-edge">0.0%</div>
+              </div>
+              <p class="mini">Edge compares your modelled probability vs implied market probability for the combined legs.</p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section id="performance" class="app-section">
+        <div class="page-hero">
+          <div>
+            <h3>Performance Hub</h3>
+            <p>Deep dive into team and player trends before committing capital. Tailored filters mimic Odd Alerts performance dashboards.</p>
+          </div>
+          <div class="hero-meta">
+            <span class="chip"><span class="dot"></span>Teams &amp; players</span>
+            <span class="chip"><span class="dot"></span>Form splits</span>
+            <span class="chip offline" data-api-status="stats"><span class="dot"></span>Stats API offline</span>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="table-controls">
+            <label>View
+              <select id="performance-view">
+                <option value="teams">Teams</option>
+                <option value="players">Players</option>
+              </select>
+            </label>
+            <label>League / Competition
+              <select id="performance-league"></select>
+            </label>
+            <label>Form focus
+              <select id="performance-form">
+                <option value="all">Season to date</option>
+                <option value="last5">Last 5</option>
+                <option value="home">Home</option>
+                <option value="away">Away</option>
+              </select>
+            </label>
+            <label>Search
+              <input type="search" id="performance-search" placeholder="Club or player name">
+            </label>
+          </div>
+          <div class="stat-cards" id="performance-stats"></div>
+          <div class="performance-grid" id="performance-table"></div>
+        </div>
+      </section>
+
+      <section id="odds" class="app-section">
+        <div class="page-hero">
+          <div>
+            <h3>Odds vs Probability Matrix</h3>
+            <p>Benchmark sportsbook prices against your fair lines. Filter by league, market, and edge quality to replicate your favourite Odd Alerts screen.</p>
+          </div>
+          <div class="hero-meta">
+            <span class="chip"><span class="dot"></span>Live edges</span>
+            <span class="chip"><span class="dot"></span>Confidence tagging</span>
+            <span class="chip offline" data-api-status="odds"><span class="dot"></span>Odds API offline</span>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="filters-row">
+            <label>League
+              <select id="odds-league"></select>
+            </label>
+            <label>Market
+              <select id="odds-market"></select>
+            </label>
+            <label>Sort by
+              <select id="odds-sort">
+                <option value="edge-desc">Highest edge</option>
+                <option value="edge-asc">Lowest edge</option>
+                <option value="time">Kick-off</option>
+              </select>
+            </label>
+            <label>Show
+              <select id="odds-show">
+                <option value="all">All plays</option>
+                <option value="positive">Positive edges only</option>
+                <option value="negative">Negative edges</option>
+              </select>
+            </label>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="odds-table" id="odds-table">
+              <thead>
+                <tr>
+                  <th>Fixture</th>
+                  <th>Market</th>
+                  <th>Selection</th>
+                  <th>Odds</th>
+                  <th>Implied Prob.</th>
+                  <th>Model Prob.</th>
+                  <th>Edge</th>
+                  <th>Confidence</th>
+                  <th>Kick-off</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="alerts" class="app-section">
+        <div class="page-hero">
+          <div>
+            <h3>Alert Center</h3>
+            <p>Track steam moves, price drifts, and custom thresholds. Filter by severity and recency to mirror the Odd Alerts real-time feed.</p>
+          </div>
+          <div class="hero-meta">
+            <span class="chip"><span class="dot"></span>Steam detection</span>
+            <span class="chip"><span class="dot"></span>Watchlist sync</span>
+            <span class="chip offline" data-api-status="live"><span class="dot"></span>Live feed offline</span>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="table-controls">
+            <label>Alert type
+              <select id="alerts-type">
+                <option value="all">All</option>
+                <option value="steam">Steam</option>
+                <option value="line">Line move</option>
+                <option value="projection">Projection drift</option>
+              </select>
+            </label>
+            <label>Severity
+              <select id="alerts-severity">
+                <option value="all">All</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </label>
+            <label>Triggered within
+              <select id="alerts-window">
+                <option value="all">Any time</option>
+                <option value="1">Last hour</option>
+                <option value="3">Last 3 hours</option>
+                <option value="6">Last 6 hours</option>
+                <option value="24">Last day</option>
+              </select>
+            </label>
+          </div>
+          <div class="alerts-layout">
+            <div>
+              <div class="alerts-summary" id="alerts-summary"></div>
+              <div class="alerts-feed" id="alerts-feed"></div>
+            </div>
+            <aside class="watchlist">
+              <h4>Market watchlist</h4>
+              <div class="mini">Auto-refreshes every 5 minutes with projections synced from the Value Lab.</div>
+              <div style="overflow-x:auto">
+                <table id="alerts-watchlist">
+                  <thead>
+                    <tr>
+                      <th>Fixture</th>
+                      <th>Market</th>
+                      <th>Trigger</th>
+                      <th>Edge</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section id="live" class="app-section">
+        <div class="page-hero">
+          <div>
+            <h3>In-Play Pulse</h3>
+            <p>Watch real-time odds, momentum swings, and live betting triggers with a dashboard tuned for in-play decisioning.</p>
+          </div>
+          <div class="hero-meta">
+            <span class="chip"><span class="dot"></span>Latency aware</span>
+            <span class="chip"><span class="dot"></span>Momentum tracker</span>
+            <span class="chip offline" data-api-status="live"><span class="dot"></span>Live feed offline</span>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="table-controls">
+            <label>Region
+              <select id="live-region"></select>
+            </label>
+            <label>Market focus
+              <select id="live-market">
+                <option value="all">All markets</option>
+                <option value="matchOdds">Match odds</option>
+                <option value="totals">Totals</option>
+                <option value="props">Player props</option>
+              </select>
+            </label>
+            <label>Latency window
+              <select id="live-latency">
+                <option value="fast">&lt; 10s</option>
+                <option value="standard">&lt; 30s</option>
+                <option value="slow">Any</option>
+              </select>
+            </label>
+            <label>Search
+              <input type="search" id="live-search" placeholder="Fixture or market">
+            </label>
+            <div class="status-pill" id="live-connection"></div>
+          </div>
+          <div class="alerts-layout">
+            <div>
+              <div class="alerts-summary" id="live-summary"></div>
+              <div class="alerts-feed" id="live-feed"></div>
+            </div>
+            <aside class="watchlist">
+              <h4>Live market board</h4>
+              <div class="mini">Snapshot of the most volatile in-play prices across your watchlist.</div>
+              <div style="overflow-x:auto">
+                <table id="live-table">
+                  <thead>
+                    <tr>
+                      <th>Fixture</th>
+                      <th>Market</th>
+                      <th>Odds</th>
+                      <th>Change</th>
+                      <th>Momentum</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section id="integrations" class="app-section">
+        <div class="page-hero">
+          <div>
+            <h3>API Integrations</h3>
+            <p>Securely store provider keys, verify connectivity, and sync modules to your preferred data vendors.</p>
+          </div>
+          <div class="hero-meta">
+            <span class="chip"><span class="dot"></span>Encrypted at rest</span>
+            <span class="chip"><span class="dot"></span>Local first</span>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="integration-grid">
+            <div class="integration-card" data-integration="odds">
+              <header>
+                <h4>Odds Provider</h4>
+                <span class="status-pill" data-status-pill="odds"><span class="dot"></span><span class="label">Offline</span></span>
+              </header>
+              <div class="status">Used for Value Lab, Odds Matrix, and Trend Radar edge calculations.</div>
+              <label>API Key
+                <input type="password" id="odds-key" placeholder="sk_live_...">
+              </label>
+              <footer>
+                <button class="primary" type="button" data-integration-action="save" data-target="odds">Save</button>
+                <button type="button" data-integration-action="test" data-target="odds">Test</button>
+                <button type="button" data-integration-action="clear" data-target="odds">Clear</button>
+              </footer>
+            </div>
+            <div class="integration-card" data-integration="stats">
+              <header>
+                <h4>Stats Provider</h4>
+                <span class="status-pill" data-status-pill="stats"><span class="dot"></span><span class="label">Offline</span></span>
+              </header>
+              <div class="status">Feeds player props, performance splits, and slip builder projections.</div>
+              <label>API Key
+                <input type="password" id="stats-key" placeholder="stats_live_...">
+              </label>
+              <footer>
+                <button class="primary" type="button" data-integration-action="save" data-target="stats">Save</button>
+                <button type="button" data-integration-action="test" data-target="stats">Test</button>
+                <button type="button" data-integration-action="clear" data-target="stats">Clear</button>
+              </footer>
+            </div>
+            <div class="integration-card" data-integration="live">
+              <header>
+                <h4>Live Feed</h4>
+                <span class="status-pill" data-status-pill="live"><span class="dot"></span><span class="label">Offline</span></span>
+              </header>
+              <div class="status">Unlocks live odds streaming for Alert Center and In-Play Pulse.</div>
+              <label>API Key
+                <input type="password" id="live-key" placeholder="live_feed_...">
+              </label>
+              <footer>
+                <button class="primary" type="button" data-integration-action="save" data-target="live">Save</button>
+                <button type="button" data-integration-action="test" data-target="live">Test</button>
+                <button type="button" data-integration-action="clear" data-target="live">Clear</button>
+              </footer>
+            </div>
+          </div>
+          <div class="integrations-log">
+            <strong>Activity</strong>
+            <ul id="integrations-log"></ul>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script>
-    // --- Storage diagnostics ---
     const proto = location.protocol.replace(':','');
     function storageOk(){
       try{
@@ -144,24 +788,132 @@
     if(!STORAGE_OK) notes.push('Local storage is blocked (Private Browsing or cookies disabled). Data will not persist.');
     if(notes.length){ banner.style.display='block'; banner.textContent = notes.join(' '); }
 
-    // --- App State ---
     const LS_BETS = 'bets_v2';
     let bets = [];
     let editingId = null;
 
-    // helpers
     const $ = s => document.querySelector(s);
     const els = {
       form: $('#bet-form'), id: $('#bet-id'), date: $('#bet-date'), sport: $('#bet-sport'), event: $('#bet-event'),
-      stake: $('#bet-stake'), odds: $('#bet-odds'), result: $('#bet-result'), notes: $('#bet-notes'),
+      stake: $('#bet-stake'), odds: $('#bet-odds'), result: $('#bet-result'), notesField: $('#bet-notes'),
       saveBtn: $('#save-btn'), resetBtn: $('#reset-btn'),
       stats: $('#stats'), tableBody: document.querySelector('#bets-table tbody'),
       btnExport: $('#btn-export'), btnExportJson: $('#btn-export-json'),
-      fileCsv: $('#file-csv'), fileJson: $('#file-json')
+      fileCsv: $('#file-csv'), fileJson: $('#file-json'), streak: $('#tracker-streak')
     };
 
-    function safeSet(key, val){
-      try{ localStorage.setItem(key, val); }
+    const navEls = {
+      buttons: Array.from(document.querySelectorAll('.primary-nav button')),
+      sections: Array.from(document.querySelectorAll('.app-section'))
+    };
+
+    const topbarNavEl = document.getElementById('topbar-nav');
+    let topbarButtons = [];
+
+    const toplineEls = {
+      activeAlerts: $('#top-active-alerts'),
+      positiveEdges: $('#top-positive-edges')
+    };
+
+    const valueEls = {
+      form: $('#value-form'),
+      event: $('#value-event'),
+      leagueInput: $('#value-league'),
+      market: $('#value-market'),
+      selection: $('#value-selection'),
+      odds: $('#value-odds'),
+      prob: $('#value-prob'),
+      stake: $('#value-stake'),
+      kickoff: $('#value-kickoff'),
+      notes: $('#value-notes'),
+      stats: $('#value-stats'),
+      tableBody: document.querySelector('#value-table tbody'),
+      leagueFilter: $('#value-league-filter'),
+      marketFilter: $('#value-market-filter'),
+      edgeFilter: $('#value-edge-filter'),
+      timeFilter: $('#value-time-filter'),
+      edgeDisplay: $('#value-edge-display'),
+      reset: $('#value-reset')
+    };
+
+    const builderEls = {
+      leagueFilter: $('#builder-league-filter'),
+      marketFilter: $('#builder-market-filter'),
+      confidenceFilter: $('#builder-confidence-filter'),
+      selectionList: $('#builder-selection-list'),
+      slip: $('#builder-slip'),
+      stake: $('#builder-stake'),
+      clear: $('#builder-clear'),
+      odds: $('#builder-odds'),
+      prob: $('#builder-prob'),
+      ret: $('#builder-return'),
+      edge: $('#builder-edge')
+    };
+
+    const performanceEls = {
+      view: $('#performance-view'),
+      league: $('#performance-league'),
+      form: $('#performance-form'),
+      search: $('#performance-search'),
+      stats: $('#performance-stats'),
+      table: $('#performance-table')
+    };
+
+    const oddsEls = {
+      league: $('#odds-league'),
+      market: $('#odds-market'),
+      sort: $('#odds-sort'),
+      show: $('#odds-show'),
+      tableBody: document.querySelector('#odds-table tbody')
+    };
+
+    const alertEls = {
+      type: $('#alerts-type'),
+      severity: $('#alerts-severity'),
+      window: $('#alerts-window'),
+      feed: $('#alerts-feed'),
+      summary: $('#alerts-summary'),
+      watchlist: document.querySelector('#alerts-watchlist tbody')
+    };
+
+    const trendsEls = {
+      type: $('#trends-type'),
+      timeframe: $('#trends-timeframe'),
+      region: $('#trends-region'),
+      search: $('#trends-search'),
+      stats: $('#trends-stats'),
+      tableBody: document.querySelector('#trends-table tbody')
+    };
+
+    const liveEls = {
+      region: $('#live-region'),
+      market: $('#live-market'),
+      latency: $('#live-latency'),
+      search: $('#live-search'),
+      summary: $('#live-summary'),
+      feed: $('#live-feed'),
+      tableBody: document.querySelector('#live-table tbody'),
+      status: $('#live-connection')
+    };
+
+    const integrationEls = {
+      inputs: {
+        odds: $('#odds-key'),
+        stats: $('#stats-key'),
+        live: $('#live-key')
+      },
+      statusPills: {
+        odds: document.querySelector('[data-status-pill="odds"]'),
+        stats: document.querySelector('[data-status-pill="stats"]'),
+        live: document.querySelector('[data-status-pill="live"]')
+      },
+      log: $('#integrations-log')
+    };
+
+    const apiChips = Array.from(document.querySelectorAll('[data-api-status]'));
+
+    function safeSet(key,val){
+      try{ localStorage.setItem(key,val); }
       catch(e){ console.warn('localStorage write failed:', e); }
     }
     function load(){
@@ -174,8 +926,734 @@
     function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
     function calcProfit(b){ if(b.result==='win') return +(b.stake*(b.odds-1)); if(b.result==='loss') return -b.stake; return 0; }
 
+    const SECTION_KEY = 'bt_section_pref_v1';
+    const HOUR = 3600000;
+    const futureHours = h => new Date(Date.now() + h * HOUR).toISOString();
+    function formatDateTime(value){
+      if(!value) return '—';
+      const d = new Date(value);
+      if(Number.isNaN(d.getTime())) return '—';
+      return d.toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    }
+    function percent(prob, decimals=1){ return `${(prob*100).toFixed(decimals)}%`; }
+    function impliedFromOdds(odds){ return odds>0 ? 1/odds : 0; }
+    function calcEdgeValue(prob, odds){ return prob - impliedFromOdds(odds); }
+    function expectedValue(prob, odds, stake){ return stake * ((prob*odds) - 1); }
+
+    const providerLabels = { odds:'Odds API', stats:'Stats API', live:'Live feed' };
+
+    function loadIntegrationState(){
+      if(!STORAGE_OK) return;
+      try{
+        const raw = JSON.parse(localStorage.getItem(LS_API_KEYS));
+        if(raw){
+          ['odds','stats','live'].forEach(key=>{
+            if(raw[key]){
+              integrationState[key].key = raw[key].key || raw[key];
+              const storedStatus = raw[key].status || (integrationState[key].key ? 'stored' : 'offline');
+              integrationState[key].status = storedStatus === 'checking' ? 'stored' : storedStatus;
+              integrationState[key].lastCheck = raw[key].lastCheck || null;
+            }
+          });
+        }
+      }catch(e){ console.warn('Failed to load integration state', e); }
+    }
+
+    function persistIntegrationState(){
+      if(!STORAGE_OK) return;
+      const payload = {
+        odds: integrationState.odds,
+        stats: integrationState.stats,
+        live: integrationState.live
+      };
+      safeSet(LS_API_KEYS, JSON.stringify(payload));
+    }
+
+    function integrationHasKey(name){ return Boolean((integrationState[name]||{}).key); }
+    function integrationConnected(name){ return (integrationState[name]||{}).status === 'connected'; }
+
+    function updateApiChips(){
+      apiChips.forEach(chip=>{
+        const provider = chip.dataset.apiStatus;
+        const status = integrationState[provider]?.status || 'offline';
+        const label = providerLabels[provider] || 'API';
+        const classes = chip.classList;
+        classes.remove('offline','online');
+        const isConnected = status === 'connected';
+        classes.add(isConnected ? 'online' : 'offline');
+        chip.innerHTML = `<span class="dot"></span>${label} ${isConnected ? 'connected' : 'offline'}`;
+      });
+    }
+
+    function updateStatusPill(name){
+      const pill = integrationEls.statusPills[name];
+      if(!pill) return;
+      const status = integrationState[name]?.status || 'offline';
+      pill.classList.remove('connected','error');
+      const dot = pill.querySelector('.dot');
+      const labelEl = pill.querySelector('.label');
+      if(status === 'connected'){
+        pill.classList.add('connected');
+        if(dot) dot.style.background = 'var(--success)';
+        if(labelEl) labelEl.textContent = 'Connected';
+      }else if(status === 'error'){
+        pill.classList.add('error');
+        if(dot) dot.style.background = 'var(--danger)';
+        if(labelEl) labelEl.textContent = 'Error';
+      }else if(status === 'checking'){
+        if(dot) dot.style.background = 'var(--warning)';
+        if(labelEl) labelEl.textContent = 'Checking…';
+      }else if(status === 'stored'){
+        if(dot) dot.style.background = 'var(--warning)';
+        if(labelEl) labelEl.textContent = 'Key stored';
+      }else{
+        if(dot) dot.style.background = 'var(--accent)';
+        if(labelEl) labelEl.textContent = 'Offline';
+      }
+    }
+
+    function updateLiveConnectionBadge(){
+      if(!liveEls.status) return;
+      const status = integrationState.live?.status || 'offline';
+      liveEls.status.classList.remove('connected','error');
+      if(status === 'connected'){
+        liveEls.status.classList.add('connected');
+        liveEls.status.innerHTML = '<span class="dot" style="background:var(--success)"></span>Live feed ready';
+      }else if(status === 'checking'){
+        liveEls.status.innerHTML = '<span class="dot" style="background:var(--warning)"></span>Checking key…';
+      }else if(status === 'error'){
+        liveEls.status.classList.add('error');
+        liveEls.status.innerHTML = '<span class="dot" style="background:var(--danger)"></span>Live feed error';
+      }else if(status === 'stored'){
+        liveEls.status.innerHTML = '<span class="dot" style="background:var(--warning)"></span>Key stored';
+      }else{
+        liveEls.status.innerHTML = '<span class="dot" style="background:var(--accent)"></span>Live feed offline';
+      }
+    }
+
+    function renderIntegrationLog(){
+      if(!integrationEls.log) return;
+      integrationEls.log.innerHTML = integrationLog.map(entry=>`<li>${escapeHtml(entry)}</li>`).join('');
+    }
+
+    function logIntegration(message){
+      const timestamp = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      integrationLog.unshift(`[${timestamp}] ${message}`);
+      integrationLog = integrationLog.slice(0,20);
+      renderIntegrationLog();
+    }
+
+    function setIntegrationStatus(name, status, note){
+      if(!integrationState[name]) return;
+      integrationState[name].status = status;
+      integrationState[name].lastCheck = Date.now();
+      if(note) logIntegration(`${providerLabels[name]||name}: ${note}`);
+      updateStatusPill(name);
+      updateApiChips();
+      updateLiveConnectionBadge();
+      persistIntegrationState();
+      if(name==='live'){
+        renderLive();
+      }else if(name==='odds'){
+        renderValueModule();
+        renderTrends();
+        renderOddsTable();
+      }else if(name==='stats'){
+        renderBuilderSelections();
+        renderPerformance();
+      }
+    }
+
+    function setIntegrationKey(name, key){
+      if(!integrationState[name]) return;
+      integrationState[name].key = key;
+      integrationState[name].status = key ? 'stored' : 'offline';
+      persistIntegrationState();
+      updateStatusPill(name);
+      updateApiChips();
+      updateLiveConnectionBadge();
+      if(name==='live') renderLive();
+    }
+
+    function simulateIntegrationTest(name){
+      return new Promise(resolve=>{
+        setIntegrationStatus(name, 'checking');
+        setTimeout(()=>{
+          const key = integrationState[name].key;
+          if(!key){
+            setIntegrationStatus(name, 'error', 'Missing API key');
+            resolve({success:false, message:'Missing API key'});
+            return;
+          }
+          const success = key.length >= 10;
+          if(success){
+            setIntegrationStatus(name, 'connected', 'Connection verified');
+            resolve({success:true, message:'Connection verified'});
+          }else{
+            setIntegrationStatus(name, 'error', 'API key rejected by provider');
+            resolve({success:false, message:'API key rejected'});
+          }
+        }, 600);
+      });
+    }
+
+    function hydrateIntegrationInputs(){
+      Object.entries(integrationEls.inputs).forEach(([name, input])=>{
+        if(input) input.value = integrationState[name]?.key || '';
+      });
+    }
+
+    function handleIntegrationAction(e){
+      const btn = e.target.closest('[data-integration-action]');
+      if(!btn) return;
+      const action = btn.dataset.integrationAction;
+      const target = btn.dataset.target;
+      if(!target || !integrationState[target]) return;
+      if(action === 'save'){
+        const input = integrationEls.inputs[target];
+        const key = input ? input.value.trim() : '';
+        setIntegrationKey(target, key);
+        logIntegration(`${providerLabels[target]||target}: ${key ? 'Key saved locally' : 'Key cleared'}`);
+      }else if(action === 'clear'){
+        const input = integrationEls.inputs[target];
+        if(input) input.value = '';
+        setIntegrationKey(target, '');
+        logIntegration(`${providerLabels[target]||target}: Key removed`);
+      }else if(action === 'test'){
+        logIntegration(`Testing ${providerLabels[target]||target} connection…`);
+        simulateIntegrationTest(target);
+      }
+    }
+
+    const curatedSelections = [
+      {
+        id:'pl-ars-che-1x2',
+        event:'Arsenal vs Chelsea',
+        league:'Premier League',
+        country:'England',
+        market:'Match Odds',
+        selection:'Arsenal to Win',
+        odds:1.92,
+        modelProb:0.58,
+        confidence:'elite',
+        stake:25,
+        kickoff: futureHours(30),
+        notes:'Arsenal averaging 2.6 xG at home across last six league fixtures.'
+      },
+      {
+        id:'pl-ars-che-btts',
+        event:'Arsenal vs Chelsea',
+        league:'Premier League',
+        country:'England',
+        market:'Both Teams to Score',
+        selection:'Yes',
+        odds:1.82,
+        modelProb:0.61,
+        confidence:'strong',
+        stake:18,
+        kickoff: futureHours(30),
+        notes:'Chelsea away matches seeing BTTS in 7 of the last 8; Arsenal concede more transitions without Rice.'
+      },
+      {
+        id:'ucl-city-real-over25',
+        event:'Man City vs Real Madrid',
+        league:'UEFA Champions League',
+        country:'Europe',
+        market:'Over 2.5 Goals',
+        selection:'Over 2.5 Goals',
+        odds:1.70,
+        modelProb:0.65,
+        confidence:'elite',
+        stake:22,
+        kickoff: futureHours(74),
+        notes:'Both clubs averaging 1.9 combined xG on target in UCL knockout rounds.'
+      },
+      {
+        id:'ucl-city-real-haaland-shots',
+        event:'Man City vs Real Madrid',
+        league:'UEFA Champions League',
+        country:'Europe',
+        market:'Player Shots on Target',
+        selection:'Erling Haaland 3+ SOT',
+        odds:2.45,
+        modelProb:0.46,
+        confidence:'speculative',
+        stake:10,
+        kickoff: futureHours(74),
+        notes:'Real allow the 3rd most box touches in Champions League; Haaland averaging 2.8 SOT at home.'
+      },
+      {
+        id:'serieA-inter-juve-1x2',
+        event:'Inter vs Juventus',
+        league:'Serie A',
+        country:'Italy',
+        market:'Match Odds',
+        selection:'Inter to Win',
+        odds:2.05,
+        modelProb:0.52,
+        confidence:'strong',
+        stake:16,
+        kickoff: futureHours(50),
+        notes:'Inter unbeaten in 11 with +1.22 xG differential per game; Juve attack averaging 0.9 xG away.'
+      },
+      {
+        id:'serieA-inter-juve-under25',
+        event:'Inter vs Juventus',
+        league:'Serie A',
+        country:'Italy',
+        market:'Under 2.5 Goals',
+        selection:'Under 2.5 Goals',
+        odds:1.95,
+        modelProb:0.57,
+        confidence:'strong',
+        stake:14,
+        kickoff: futureHours(50),
+        notes:'Derby d’Italia averaging 1.8 total goals last five meetings; both top 3 for defensive xGA.'
+      },
+      {
+        id:'laliga-bar-atleti-over25',
+        event:'Barcelona vs Atlético Madrid',
+        league:'La Liga',
+        country:'Spain',
+        market:'Over 2.5 Goals',
+        selection:'Over 2.5 Goals',
+        odds:1.95,
+        modelProb:0.52,
+        confidence:'speculative',
+        stake:12,
+        kickoff: futureHours(98),
+        notes:'Barcelona conceding 1.6 xG at Montjuïc while Atletico attack trending upwards (2.1 xG last 5).'
+      },
+      {
+        id:'laliga-bar-atleti-corners',
+        event:'Barcelona vs Atlético Madrid',
+        league:'La Liga',
+        country:'Spain',
+        market:'Corners',
+        selection:'Over 9.5 Corners',
+        odds:1.90,
+        modelProb:0.58,
+        confidence:'strong',
+        stake:12,
+        kickoff: futureHours(98),
+        notes:'Both sides top four for corners won; Barca concede wing overloads leading to volume.'
+      },
+      {
+        id:'bund-bayern-dortmund-btts',
+        event:'Bayern Munich vs Dortmund',
+        league:'Bundesliga',
+        country:'Germany',
+        market:'Both Teams to Score',
+        selection:'Yes',
+        odds:1.75,
+        modelProb:0.49,
+        confidence:'speculative',
+        stake:10,
+        kickoff: futureHours(26),
+        notes:'Market heavily priced; our model less bullish given Bayern defensive numbers with Neuer back.'
+      },
+      {
+        id:'bund-bayern-dortmund-over35',
+        event:'Bayern Munich vs Dortmund',
+        league:'Bundesliga',
+        country:'Germany',
+        market:'Over 3.5 Goals',
+        selection:'Over 3.5 Goals',
+        odds:2.02,
+        modelProb:0.51,
+        confidence:'strong',
+        stake:11,
+        kickoff: futureHours(26),
+        notes:'Classic Der Klassiker tempo; combined non-penalty xG of 3.4 per game this season.'
+      },
+      {
+        id:'ligue1-psg-marseille-htft',
+        event:'PSG vs Marseille',
+        league:'Ligue 1',
+        country:'France',
+        market:'Half-Time/Full-Time',
+        selection:'PSG/PSG',
+        odds:2.40,
+        modelProb:0.43,
+        confidence:'strong',
+        stake:13,
+        kickoff: futureHours(120),
+        notes:'PSG leading at half in 68% of league games; Marseille slow starters away (0.6 xG first half).'
+      },
+      {
+        id:'ligue1-psg-marseille-mbappe',
+        event:'PSG vs Marseille',
+        league:'Ligue 1',
+        country:'France',
+        market:'Anytime Goalscorer',
+        selection:'Kylian Mbappé',
+        odds:1.75,
+        modelProb:0.61,
+        confidence:'elite',
+        stake:20,
+        kickoff: futureHours(120),
+        notes:'Mbappé 0.92 non-pen xG per 90; Marseille concede most big chances in Ligue 1.'
+      },
+      {
+        id:'eredivisie-ajax-psv-over35',
+        event:'Ajax vs PSV',
+        league:'Eredivisie',
+        country:'Netherlands',
+        market:'Over 3.5 Goals',
+        selection:'Over 3.5 Goals',
+        odds:1.88,
+        modelProb:0.59,
+        confidence:'elite',
+        stake:15,
+        kickoff: futureHours(140),
+        notes:'Ajax matches averaging 3.9 xG; PSV pressing creating high event totals.'
+      },
+      {
+        id:'mls-la-seattle-over25',
+        event:'LAFC vs Seattle Sounders',
+        league:'MLS',
+        country:'USA',
+        market:'Over 2.5 Goals',
+        selection:'Over 2.5 Goals',
+        odds:1.92,
+        modelProb:0.57,
+        confidence:'strong',
+        stake:10,
+        kickoff: futureHours(12),
+        notes:'LAFC home attack firing with 2.3 xG last three; Seattle transition threat intact.'
+      },
+      {
+        id:'champ-ipswich-leeds-over25',
+        event:'Ipswich vs Leeds',
+        league:'EFL Championship',
+        country:'England',
+        market:'Over 2.5 Goals',
+        selection:'Over 2.5 Goals',
+        odds:1.83,
+        modelProb:0.55,
+        confidence:'speculative',
+        stake:9,
+        kickoff: futureHours(60),
+        notes:'Promotion six-pointer with both averaging 1.9 xG for in last ten fixtures.'
+      }
+    ];
+
+    const supplementalSnapshots = [
+      {
+        id:'laliga-girona-villarreal-btts',
+        event:'Girona vs Villarreal',
+        league:'La Liga',
+        country:'Spain',
+        market:'Both Teams to Score',
+        selection:'Yes',
+        odds:1.66,
+        modelProb:0.59,
+        confidence:'monitor',
+        stake:10,
+        kickoff: futureHours(46),
+        notes:'Girona home matches average 3.4 goals; Villarreal defence still leaking big chances.'
+      },
+      {
+        id:'serieA-roma-napoli-under25',
+        event:'Roma vs Napoli',
+        league:'Serie A',
+        country:'Italy',
+        market:'Under 2.5 Goals',
+        selection:'Under 2.5 Goals',
+        odds:1.95,
+        modelProb:0.48,
+        confidence:'monitor',
+        stake:9,
+        kickoff: futureHours(90),
+        notes:'Napoli creating less than 1.1 xG under new manager; Roma attack streaky without Dybala.'
+      },
+      {
+        id:'epl-brentford-fulham-corners',
+        event:'Brentford vs Fulham',
+        league:'Premier League',
+        country:'England',
+        market:'Corners',
+        selection:'Over 10.5 Corners',
+        odds:1.85,
+        modelProb:0.55,
+        confidence:'monitor',
+        stake:8,
+        kickoff: futureHours(110),
+        notes:'Both sides top six for crosses per 90 leading to corner volume.'
+      },
+      {
+        id:'ligue1-lyon-lille-draw',
+        event:'Lyon vs Lille',
+        league:'Ligue 1',
+        country:'France',
+        market:'Match Odds',
+        selection:'Draw',
+        odds:3.25,
+        modelProb:0.31,
+        confidence:'monitor',
+        stake:7,
+        kickoff: futureHours(118),
+        notes:'Both teams compact of late; Lille xG differential drops away from home.'
+      },
+      {
+        id:'mls-atlanta-nyc-over35',
+        event:'Atlanta United vs NYCFC',
+        league:'MLS',
+        country:'USA',
+        market:'Over 3.5 Goals',
+        selection:'Over 3.5 Goals',
+        odds:2.20,
+        modelProb:0.43,
+        confidence:'monitor',
+        stake:8,
+        kickoff: futureHours(36),
+        notes:'Atlanta’s press generating chaos; NYCFC conceding high xG against in transition.'
+      },
+      {
+        id:'ucl-dortmund-atleti-under25',
+        event:'Borussia Dortmund vs Atlético Madrid',
+        league:'UEFA Champions League',
+        country:'Europe',
+        market:'Under 2.5 Goals',
+        selection:'Under 2.5 Goals',
+        odds:1.92,
+        modelProb:0.53,
+        confidence:'monitor',
+        stake:9,
+        kickoff: futureHours(166),
+        notes:'Return leg projected cagey; Atletico away games averaging 1.8 total goals in UCL.'
+      }
+    ];
+
+    const trendUniverse = [
+      {
+        id:'trend-pl-homewins',
+        event:'Arsenal vs Chelsea',
+        league:'Premier League',
+        region:'Europe',
+        market:'Home Win',
+        type:'homeWins',
+        timeframe:'5',
+        odds:1.92,
+        modelProb:0.58,
+        trend:'Home wins in 4 of last 5',
+        form:'WWWLW'
+      },
+      {
+        id:'trend-pl-awaywins',
+        event:'Man City vs Real Madrid',
+        league:'UEFA Champions League',
+        region:'Europe',
+        market:'Away Win',
+        type:'awayWins',
+        timeframe:'10',
+        odds:3.60,
+        modelProb:0.31,
+        trend:'Madrid away wins in 7 of last 10',
+        form:'WWWDWL'
+      },
+      {
+        id:'trend-serieA-unders',
+        event:'Inter vs Juventus',
+        league:'Serie A',
+        region:'Europe',
+        market:'Under 2.5 Goals',
+        type:'goals',
+        timeframe:'10',
+        odds:1.95,
+        modelProb:0.57,
+        trend:'Under 2.5 in 8 of last 10',
+        form:'WWDDWW'
+      },
+      {
+        id:'trend-ligue1-btts',
+        event:'PSG vs Marseille',
+        league:'Ligue 1',
+        region:'Europe',
+        market:'Both Teams to Score',
+        type:'btts',
+        timeframe:'season',
+        odds:1.62,
+        modelProb:0.66,
+        trend:'BTTS in 19 of 26 matches',
+        form:'WDLWW'
+      },
+      {
+        id:'trend-eredivisie-goals',
+        event:'Ajax vs PSV',
+        league:'Eredivisie',
+        region:'Europe',
+        market:'Over 3.5 Goals',
+        type:'goals',
+        timeframe:'5',
+        odds:1.88,
+        modelProb:0.59,
+        trend:'Over 3.5 in 4 straight',
+        form:'WWWWW'
+      },
+      {
+        id:'trend-mls-goals',
+        event:'LAFC vs Seattle Sounders',
+        league:'MLS',
+        region:'Americas',
+        market:'Over 2.5 Goals',
+        type:'goals',
+        timeframe:'10',
+        odds:1.92,
+        modelProb:0.57,
+        trend:'Both clubs average 3.4 goals last 10',
+        form:'WWLDW'
+      },
+      {
+        id:'trend-champ-homewins',
+        event:'Ipswich vs Leeds',
+        league:'EFL Championship',
+        region:'Europe',
+        market:'Home Win',
+        type:'homeWins',
+        timeframe:'season',
+        odds:2.20,
+        modelProb:0.44,
+        trend:'Ipswich 12-3-2 at home',
+        form:'WWDWL'
+      },
+      {
+        id:'trend-brasileirao-btts',
+        event:'Palmeiras vs Flamengo',
+        league:'Brasileirão',
+        region:'Americas',
+        market:'Both Teams to Score',
+        type:'btts',
+        timeframe:'10',
+        odds:1.98,
+        modelProb:0.55,
+        trend:'BTTS hit in 6 of last 8 combined',
+        form:'WDWLW'
+      }
+    ];
+
+    const liveUniverse = [
+      {
+        id:'live-pl-ars-che',
+        event:'Arsenal vs Chelsea',
+        league:'Premier League',
+        region:'Europe',
+        market:'matchOdds',
+        latency:'fast',
+        odds:1.74,
+        change:+0.06,
+        momentum:'Arsenal pressing +12%',
+        updatedAt: new Date(Date.now()-12000).toISOString()
+      },
+      {
+        id:'live-ucl-city-real',
+        event:'Man City vs Real Madrid',
+        league:'UEFA Champions League',
+        region:'Europe',
+        market:'totals',
+        latency:'standard',
+        odds:1.68,
+        change:-0.08,
+        momentum:'xG pace 2.9 → 2.4',
+        updatedAt: new Date(Date.now()-32000).toISOString()
+      },
+      {
+        id:'live-seriea-inter-juve',
+        event:'Inter vs Juventus',
+        league:'Serie A',
+        region:'Europe',
+        market:'matchOdds',
+        latency:'fast',
+        odds:2.12,
+        change:+0.04,
+        momentum:'Juve down to 10 men',
+        updatedAt: new Date(Date.now()-8000).toISOString()
+      },
+      {
+        id:'live-mls-la-sea',
+        event:'LAFC vs Seattle Sounders',
+        league:'MLS',
+        region:'Americas',
+        market:'totals',
+        latency:'standard',
+        odds:1.84,
+        change:+0.02,
+        momentum:'Shot quality trending up',
+        updatedAt: new Date(Date.now()-45000).toISOString()
+      },
+      {
+        id:'live-laliga-girona-villarreal',
+        event:'Girona vs Villarreal',
+        league:'La Liga',
+        region:'Europe',
+        market:'props',
+        latency:'fast',
+        odds:2.35,
+        change:+0.12,
+        momentum:'Villarreal bookings 3 early',
+        updatedAt: new Date(Date.now()-20000).toISOString()
+      },
+      {
+        id:'live-brasil-pal-flam',
+        event:'Palmeiras vs Flamengo',
+        league:'Brasileirão',
+        region:'Americas',
+        market:'matchOdds',
+        latency:'slow',
+        odds:2.88,
+        change:-0.05,
+        momentum:'Humidity slowing tempo',
+        updatedAt: new Date(Date.now()-61000).toISOString()
+      }
+    ];
+
+    const LS_API_KEYS = 'bt_api_keys_v1';
+    let integrationState = {
+      odds: { key:'', status:'offline', lastCheck:null },
+      stats: { key:'', status:'offline', lastCheck:null },
+      live: { key:'', status:'offline', lastCheck:null }
+    };
+    let integrationLog = [];
+
+    const oddsUniverse = [...curatedSelections, ...supplementalSnapshots];
+    const customProjections = [];
+
+    const valueState = { league:'all', market:'all', minEdge:0, timeframe:'all' };
+    const trendState = { type:'all', timeframe:'all', region:'all', search:'' };
+    const liveState = { region:'all', market:'all', latency:'standard', search:'' };
+    const builderState = { slip: [] };
+
+    const teamPerformance = [
+      { team:'Arsenal', league:'Premier League', country:'England', matches:30, wins:21, draws:5, losses:4, goalsFor:72, goalsAgainst:24, xgFor:64.4, xgAgainst:28.7, lastFive:'W W W D W', homeWinRate:0.78, awayWinRate:0.64, formPointsLast5:13, cleanSheets:15, ppg:2.23, streak:'W3', shotsFor:16.8, shotsAgainst:8.4 },
+      { team:'Liverpool', league:'Premier League', country:'England', matches:30, wins:20, draws:7, losses:3, goalsFor:68, goalsAgainst:28, xgFor:62.8, xgAgainst:30.9, lastFive:'W W D W W', homeWinRate:0.81, awayWinRate:0.58, formPointsLast5:13, cleanSheets:13, ppg:2.27, streak:'W2', shotsFor:17.4, shotsAgainst:9.1 },
+      { team:'Manchester City', league:'Premier League', country:'England', matches:30, wins:21, draws:6, losses:3, goalsFor:70, goalsAgainst:27, xgFor:64.7, xgAgainst:29.2, lastFive:'W W W W D', homeWinRate:0.79, awayWinRate:0.62, formPointsLast5:13, cleanSheets:12, ppg:2.30, streak:'W4', shotsFor:18.1, shotsAgainst:8.6 },
+      { team:'Real Madrid', league:'La Liga', country:'Spain', matches:29, wins:24, draws:4, losses:1, goalsFor:68, goalsAgainst:20, xgFor:63.1, xgAgainst:23.3, lastFive:'W W W D W', homeWinRate:0.86, awayWinRate:0.69, formPointsLast5:13, cleanSheets:15, ppg:2.55, streak:'W2', shotsFor:15.9, shotsAgainst:7.3 },
+      { team:'Barcelona', league:'La Liga', country:'Spain', matches:29, wins:20, draws:6, losses:3, goalsFor:63, goalsAgainst:28, xgFor:59.4, xgAgainst:30.1, lastFive:'W W W W W', homeWinRate:0.68, awayWinRate:0.72, formPointsLast5:15, cleanSheets:12, ppg:2.34, streak:'W5', shotsFor:15.6, shotsAgainst:8.9 },
+      { team:'Inter Milan', league:'Serie A', country:'Italy', matches:30, wins:24, draws:4, losses:2, goalsFor:73, goalsAgainst:17, xgFor:65.6, xgAgainst:23.0, lastFive:'W W W W W', homeWinRate:0.83, awayWinRate:0.74, formPointsLast5:15, cleanSheets:16, ppg:2.53, streak:'W7', shotsFor:17.3, shotsAgainst:7.2 },
+      { team:'Bayern Munich', league:'Bundesliga', country:'Germany', matches:28, wins:19, draws:5, losses:4, goalsFor:78, goalsAgainst:32, xgFor:69.2, xgAgainst:30.4, lastFive:'W W L W W', homeWinRate:0.86, awayWinRate:0.57, formPointsLast5:12, cleanSheets:11, ppg:2.29, streak:'W2', shotsFor:19.1, shotsAgainst:9.5 },
+      { team:'Bayer Leverkusen', league:'Bundesliga', country:'Germany', matches:28, wins:24, draws:4, losses:0, goalsFor:74, goalsAgainst:20, xgFor:66.1, xgAgainst:25.8, lastFive:'W W W W W', homeWinRate:0.89, awayWinRate:0.71, formPointsLast5:15, cleanSheets:14, ppg:2.71, streak:'W8', shotsFor:17.9, shotsAgainst:7.6 },
+      { team:'Juventus', league:'Serie A', country:'Italy', matches:30, wins:18, draws:8, losses:4, goalsFor:52, goalsAgainst:24, xgFor:49.3, xgAgainst:27.5, lastFive:'L D D W D', homeWinRate:0.73, awayWinRate:0.56, formPointsLast5:6, cleanSheets:16, ppg:2.07, streak:'D1', shotsFor:14.2, shotsAgainst:9.0 }
+    ];
+
+    const playerPerformance = [
+      { player:'Bukayo Saka', team:'Arsenal', league:'Premier League', position:'RW', matches:29, minutes:2430, goals:15, assists:9, shotsPer90:2.9, xg:14.2, xa:10.6, formRating:8.2, last5Goals:5, last5Assists:3, conversion:0.21, keyPassesPer90:2.5, trend:'hot' },
+      { player:'Erling Haaland', team:'Manchester City', league:'Premier League', position:'ST', matches:27, minutes:2250, goals:21, assists:5, shotsPer90:4.5, xg:22.6, xa:4.2, formRating:7.8, last5Goals:6, last5Assists:1, conversion:0.28, keyPassesPer90:1.1, trend:'hot' },
+      { player:'Jude Bellingham', team:'Real Madrid', league:'La Liga', position:'AM', matches:27, minutes:2295, goals:16, assists:6, shotsPer90:3.0, xg:12.9, xa:6.8, formRating:8.0, last5Goals:4, last5Assists:2, conversion:0.24, keyPassesPer90:2.2, trend:'steady' },
+      { player:'Lautaro Martínez', team:'Inter Milan', league:'Serie A', position:'ST', matches:27, minutes:2180, goals:23, assists:5, shotsPer90:3.9, xg:19.8, xa:4.4, formRating:8.4, last5Goals:7, last5Assists:2, conversion:0.28, keyPassesPer90:1.5, trend:'hot' },
+      { player:'Kylian Mbappé', team:'PSG', league:'Ligue 1', position:'FW', matches:26, minutes:2100, goals:24, assists:7, shotsPer90:4.2, xg:21.5, xa:6.1, formRating:8.5, last5Goals:6, last5Assists:2, conversion:0.27, keyPassesPer90:1.9, trend:'hot' },
+      { player:'Harry Kane', team:'Bayern Munich', league:'Bundesliga', position:'ST', matches:28, minutes:2300, goals:29, assists:5, shotsPer90:4.7, xg:25.2, xa:5.2, formRating:8.3, last5Goals:8, last5Assists:1, conversion:0.30, keyPassesPer90:1.6, trend:'hot' },
+      { player:'Florian Wirtz', team:'Bayer Leverkusen', league:'Bundesliga', position:'AM', matches:27, minutes:2190, goals:11, assists:12, shotsPer90:2.4, xg:9.4, xa:12.1, formRating:7.9, last5Goals:3, last5Assists:4, conversion:0.18, keyPassesPer90:3.4, trend:'steady' },
+      { player:'Mohamed Salah', team:'Liverpool', league:'Premier League', position:'RW', matches:26, minutes:2200, goals:17, assists:9, shotsPer90:3.6, xg:16.5, xa:9.3, formRating:7.7, last5Goals:4, last5Assists:3, conversion:0.23, keyPassesPer90:2.6, trend:'steady' },
+      { player:'Robert Lewandowski', team:'Barcelona', league:'La Liga', position:'ST', matches:27, minutes:2250, goals:18, assists:7, shotsPer90:3.8, xg:17.1, xa:5.5, formRating:7.6, last5Goals:5, last5Assists:2, conversion:0.22, keyPassesPer90:1.8, trend:'steady' },
+      { player:'Cole Palmer', team:'Chelsea', league:'Premier League', position:'AM', matches:28, minutes:2140, goals:14, assists:8, shotsPer90:2.7, xg:12.2, xa:8.4, formRating:7.5, last5Goals:5, last5Assists:3, conversion:0.23, keyPassesPer90:2.9, trend:'hot' }
+    ];
+
     function renderTable(){
-      const rows = bets.slice().sort((a,b)=> (b.date+a.id) < (a.date+b.id) ? -1 : 1).map(b=>{
+      const rows = bets.slice().sort((a,b)=>{
+        const dateDiff = (new Date(b.date||0)) - (new Date(a.date||0));
+        if(dateDiff!==0) return dateDiff;
+        return (b.id||'').localeCompare(a.id||'');
+      }).map(b=>{
         const profit = calcProfit(b);
         return `<tr>
           <td>${escapeHtml(b.date)}</td>
@@ -195,6 +1673,22 @@
         </tr>`;
       }).join('');
       els.tableBody.innerHTML = rows || '<tr><td colspan="9" style="color:var(--muted);text-align:center;padding:14px">No bets yet.</td></tr>';
+    }
+
+    function computeStreak(){
+      const settled = bets.filter(b=>b.result==='win' || b.result==='loss').sort((a,b)=>{
+        const diff = (new Date(b.date||0)) - (new Date(a.date||0));
+        if(diff!==0) return diff;
+        return (b.id||'').localeCompare(a.id||'');
+      });
+      if(!settled.length) return '—';
+      const first = settled[0].result;
+      let count = 0;
+      for(const bet of settled){
+        if(bet.result!==first) break;
+        count++;
+      }
+      return (first==='win'?'W':'L') + count;
     }
 
     function renderStats(){
@@ -217,6 +1711,7 @@
         card('Net P&L', (net>=0?'+':'')+fmtMoney(net)),
         card('ROI (settled)', `${roi.toFixed(2)}%`)
       ].join('');
+      els.streak.textContent = computeStreak();
     }
 
     function resetForm(){
@@ -224,6 +1719,7 @@
       els.form.reset();
       els.saveBtn.textContent = 'Save Bet';
       els.date.value = new Date().toISOString().slice(0,10);
+      els.notesField.value = '';
     }
 
     function addOrUpdate(e){
@@ -236,13 +1732,15 @@
         stake: parseFloat(els.stake.value)||0,
         odds: Math.max(1, parseFloat(els.odds.value)||1),
         result: els.result.value,
-        notes: els.notes.value.trim()
+        notes: els.notesField.value.trim()
       };
       if(!data.event){ alert('Event is required'); return; }
       if(editingId){
         const i = bets.findIndex(x=>x.id===editingId);
         if(i>=0) bets[i] = data;
-      } else { bets.push(data); }
+      } else {
+        bets.push(data);
+      }
       save(); resetForm(); renderAll();
     }
 
@@ -253,7 +1751,7 @@
       if(action==='edit'){
         editingId = b.id;
         els.date.value = b.date; els.sport.value=b.sport||''; els.event.value=b.event;
-        els.stake.value=b.stake; els.odds.value=b.odds; els.result.value=b.result; els.notes.value=b.notes||'';
+        els.stake.value=b.stake; els.odds.value=b.odds; els.result.value=b.result; els.notesField.value=b.notes||'';
         els.saveBtn.textContent = 'Update Bet'; window.scrollTo({top:0,behavior:'smooth'});
       }else if(action==='delete'){
         if(confirm('Delete this bet?')){ bets = bets.filter(x=>x.id!==id); save(); renderAll(); }
@@ -269,7 +1767,7 @@
     function exportCSV(){
       const headers=['id','date','sport','event','stake','odds','result','notes'];
       const rows=bets.map(b=>headers.map(h=>`"${String(b[h]??'').replaceAll('"','""')}"`).join(','));
-      const csv=[headers.join(','),...rows].join('\\n'); download('bets.csv',csv,'text/csv');
+      const csv=[headers.join(','),...rows].join('\n'); download('bets.csv',csv,'text/csv');
     }
     function exportJSON(){ download('bets.json', JSON.stringify({bets},null,2), 'application/json'); }
     function restoreJSON(file){
@@ -280,7 +1778,7 @@
     function importCSV(file){
       const reader=new FileReader();
       reader.onload=()=>{
-        const text=reader.result; const lines=text.split(/\\r?\\n/).filter(Boolean);
+        const text=reader.result; const lines=text.split(/\r?\n/).filter(Boolean);
         if(lines.length<2) return alert('CSV seems empty');
         const header=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
         function parseLine(line){
@@ -302,6 +1800,810 @@
       reader.readAsText(file);
     }
 
+    function uniqueValues(data, key){
+      return Array.from(new Set(data.map(item=>item[key]).filter(Boolean))).sort((a,b)=>String(a).localeCompare(String(b)));
+    }
+    function optionsMarkup(values, allLabel){
+      return `<option value="all">${allLabel}</option>` + values.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    }
+    function formatSignedNumber(val, decimals=2){
+      const sign = val>=0 ? '+' : '-';
+      return sign + Math.abs(val).toFixed(decimals);
+    }
+    function formatSignedPercentDecimal(val){
+      const pct = val*100;
+      const sign = pct>=0 ? '+' : '-';
+      return sign + Math.abs(pct).toFixed(1) + '%';
+    }
+    function allValueSelections(){ return [...curatedSelections, ...customProjections]; }
+    function syncValueFilters(){
+      const leagues = uniqueValues(allValueSelections(),'league');
+      const markets = uniqueValues(allValueSelections(),'market');
+      const prevLeague = valueEls.leagueFilter.value || 'all';
+      const prevMarket = valueEls.marketFilter.value || 'all';
+      valueEls.leagueFilter.innerHTML = optionsMarkup(leagues, 'All leagues');
+      valueEls.marketFilter.innerHTML = optionsMarkup(markets, 'All markets');
+      if(leagues.includes(prevLeague)) valueEls.leagueFilter.value = prevLeague; else valueEls.leagueFilter.value = 'all';
+      if(markets.includes(prevMarket)) valueEls.marketFilter.value = prevMarket; else valueEls.marketFilter.value = 'all';
+    }
+    function applyValueFilterState(){
+      valueState.league = valueEls.leagueFilter.value || 'all';
+      valueState.market = valueEls.marketFilter.value || 'all';
+      valueState.minEdge = Number(valueEls.edgeFilter.value||0);
+      valueState.timeframe = valueEls.timeFilter.value || 'all';
+    }
+    function filterValueSelections(){
+      applyValueFilterState();
+      const now = Date.now();
+      return allValueSelections().filter(sel=>{
+        if(valueState.league!=='all' && sel.league!==valueState.league) return false;
+        if(valueState.market!=='all' && sel.market!==valueState.market) return false;
+        const edgePct = calcEdgeValue(sel.modelProb, sel.odds) * 100;
+        if(edgePct < valueState.minEdge) return false;
+        if(valueState.timeframe!=='all' && sel.kickoff){
+          const diffHours = (new Date(sel.kickoff).getTime() - now)/HOUR;
+          if(diffHours < 0 || diffHours > Number(valueState.timeframe)) return false;
+        }
+        return true;
+      });
+    }
+    function renderValueStats(data){
+      if(!data.length){
+        valueEls.stats.innerHTML = '<div class="card"><div class="k">Opportunities</div><div class="v">0</div></div>';
+        return;
+      }
+      const card = (k,v)=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+      const avgEdge = data.reduce((sum,sel)=>sum + calcEdgeValue(sel.modelProb, sel.odds),0)/data.length;
+      const avgOdds = data.reduce((sum,sel)=>sum + sel.odds,0)/data.length;
+      const positive = data.filter(sel=>calcEdgeValue(sel.modelProb, sel.odds)>0);
+      const avgEv = data.reduce((sum,sel)=>sum + expectedValue(sel.modelProb, sel.odds, sel.stake||10),0)/data.length;
+      valueEls.stats.innerHTML = [
+        card('Opportunities', data.length),
+        card('Avg Edge', formatSignedPercentDecimal(avgEdge)),
+        card('Positive EV', positive.length),
+        card('Avg Odds', avgOdds.toFixed(2)),
+        card('Avg EV (£)', formatSignedNumber(avgEv,2))
+      ].join('');
+    }
+    function renderValueTable(data){
+      if(!data.length){
+        valueEls.tableBody.innerHTML = '<tr><td colspan="10" style="padding:14px;text-align:center;color:var(--muted)">No projections match your filters yet.</td></tr>';
+        return;
+      }
+      const rows = data.map(sel=>{
+        const implied = impliedFromOdds(sel.odds);
+        const edge = calcEdgeValue(sel.modelProb, sel.odds);
+        const ev = expectedValue(sel.modelProb, sel.odds, sel.stake||10);
+        const rowClass = edge>0.005 ? 'positive' : edge<-0.005 ? 'negative' : '';
+        const evMoney = fmtMoney(Math.abs(ev));
+        const evDisplay = (ev>=0?'+':'-') + evMoney;
+        return `<tr class="${rowClass}">
+          <td><strong>${escapeHtml(sel.event)}</strong><div class="mini">${escapeHtml(sel.league||'')}</div></td>
+          <td>${escapeHtml(sel.market)}</td>
+          <td>${escapeHtml(sel.selection)}</td>
+          <td>${sel.odds.toFixed(2)}</td>
+          <td>${percent(sel.modelProb)}</td>
+          <td>${percent(implied)}</td>
+          <td>${formatSignedPercentDecimal(edge)}</td>
+          <td>${evDisplay}</td>
+          <td>${formatDateTime(sel.kickoff)}</td>
+          <td>${escapeHtml(sel.notes||'—')}</td>
+        </tr>`;
+      }).join('');
+      valueEls.tableBody.innerHTML = rows;
+    }
+    function renderValueModule(){
+      const data = filterValueSelections();
+      renderValueStats(data);
+      renderValueTable(data);
+      const minEdge = Number(valueEls.edgeFilter.value||0);
+      valueEls.edgeDisplay.textContent = `Edge ≥ ${minEdge.toFixed(1)}%`;
+    }
+    function resetValueForm(){
+      valueEls.form.reset();
+      valueEls.stake.value = '10';
+    }
+    function handleValueSubmit(e){
+      e.preventDefault();
+      const event = valueEls.event.value.trim();
+      const market = valueEls.market.value.trim();
+      const selection = valueEls.selection.value.trim();
+      if(!event || !market || !selection) return;
+      const probInput = Math.min(99.9, Math.max(1, parseFloat(valueEls.prob.value)||0));
+      const entry = {
+        id:'custom-'+Date.now(),
+        event,
+        league: valueEls.leagueInput.value.trim() || 'Custom',
+        country:'Custom',
+        market,
+        selection,
+        odds: Math.max(1, parseFloat(valueEls.odds.value)||1),
+        modelProb: probInput/100,
+        confidence:'custom',
+        stake: Math.max(1, parseFloat(valueEls.stake.value)||10),
+        kickoff: valueEls.kickoff.value ? new Date(valueEls.kickoff.value).toISOString() : null,
+        notes: valueEls.notes.value.trim() || 'User projection'
+      };
+      customProjections.push(entry);
+      resetValueForm();
+      syncValueFilters();
+      renderValueModule();
+      syncAlertsFromValue();
+    }
+
+    function syncTrendsFilters(){
+      const regions = uniqueValues(trendUniverse,'region');
+      const prevRegion = trendsEls.region.value || 'all';
+      trendsEls.region.innerHTML = `<option value="all">All regions</option>` + regions.map(region=>`<option value="${escapeHtml(region)}">${escapeHtml(region)}</option>`).join('');
+      if(regions.includes(prevRegion)) trendsEls.region.value = prevRegion; else trendsEls.region.value = 'all';
+      if(trendsEls.type) trendsEls.type.value = trendState.type;
+      if(trendsEls.timeframe) trendsEls.timeframe.value = trendState.timeframe;
+      if(trendsEls.search) trendsEls.search.value = trendState.search;
+    }
+
+    function applyTrendState(){
+      trendState.type = trendsEls.type.value || 'all';
+      trendState.timeframe = trendsEls.timeframe.value || 'all';
+      trendState.region = trendsEls.region.value || 'all';
+      trendState.search = (trendsEls.search.value || '').trim().toLowerCase();
+    }
+
+    function filteredTrends(){
+      applyTrendState();
+      return trendUniverse.filter(item=>{
+        if(trendState.type !== 'all' && item.type !== trendState.type) return false;
+        if(trendState.timeframe !== 'all' && item.timeframe !== trendState.timeframe) return false;
+        if(trendState.region !== 'all' && item.region !== trendState.region) return false;
+        if(trendState.search){
+          const hay = `${item.event} ${item.league} ${item.market}`.toLowerCase();
+          if(!hay.includes(trendState.search)) return false;
+        }
+        return true;
+      });
+    }
+
+    function trendEdge(item){ return calcEdgeValue(item.modelProb, item.odds); }
+
+    function renderTrendStats(data){
+      if(!trendsEls.stats) return;
+      if(!data.length){
+        trendsEls.stats.innerHTML = '<div class="card"><div class="k">Trends</div><div class="v">No matches</div><div class="mini">Adjust filters or timeframe.</div></div>';
+        return;
+      }
+      const avgEdge = data.reduce((sum,item)=>sum+trendEdge(item),0)/data.length;
+      const positive = data.filter(item=>trendEdge(item)>0).length;
+      const best = data.slice().sort((a,b)=>trendEdge(b)-trendEdge(a))[0];
+      const cards = [
+        `<div class="card"><div class="k">Signals</div><div class="v">${data.length}</div><div class="mini">${positive} positive edges</div></div>`,
+        `<div class="card"><div class="k">Avg edge</div><div class="v">${formatSignedPercentDecimal(avgEdge)}</div><div class="mini">Model vs implied</div></div>`,
+        `<div class="card"><div class="k">Top spot</div><div class="v">${escapeHtml(best.event)}</div><div class="mini">${formatSignedPercentDecimal(trendEdge(best))} · ${escapeHtml(best.market)}</div></div>`
+      ];
+      trendsEls.stats.innerHTML = cards.join('');
+    }
+
+    function renderTrendsTable(data){
+      if(!trendsEls.tableBody) return;
+      if(!data.length){
+        trendsEls.tableBody.innerHTML = '<tr><td colspan="8" style="padding:14px;text-align:center;color:var(--muted)">No trend data for the selected filters.</td></tr>';
+        return;
+      }
+      trendsEls.tableBody.innerHTML = data.map(item=>{
+        const implied = impliedFromOdds(item.odds);
+        const edge = trendEdge(item);
+        const edgeDisplay = formatSignedPercentDecimal(edge);
+        return `<tr>
+          <td><strong>${escapeHtml(item.event)}</strong><div class="mini">${escapeHtml(item.market)}</div></td>
+          <td>${escapeHtml(item.league)}</td>
+          <td>${escapeHtml(item.trend)}</td>
+          <td>${item.odds.toFixed(2)}</td>
+          <td>${percent(implied)}</td>
+          <td>${percent(item.modelProb)}</td>
+          <td>${edgeDisplay}</td>
+          <td>${escapeHtml(item.form)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderTrends(){
+      const data = filteredTrends();
+      renderTrendStats(data);
+      renderTrendsTable(data);
+    }
+
+    function syncLiveFilters(){
+      const regions = uniqueValues(liveUniverse,'region');
+      const prevRegion = liveEls.region.value || 'all';
+      liveEls.region.innerHTML = `<option value="all">All regions</option>` + regions.map(region=>`<option value="${escapeHtml(region)}">${escapeHtml(region)}</option>`).join('');
+      if(regions.includes(prevRegion)) liveEls.region.value = prevRegion; else liveEls.region.value = 'all';
+      if(liveEls.market) liveEls.market.value = liveState.market;
+      if(liveEls.latency) liveEls.latency.value = liveState.latency;
+      if(liveEls.search) liveEls.search.value = liveState.search;
+    }
+
+    function applyLiveState(){
+      liveState.region = liveEls.region.value || 'all';
+      liveState.market = liveEls.market.value || 'all';
+      liveState.latency = liveEls.latency.value || 'standard';
+      liveState.search = (liveEls.search.value || '').trim().toLowerCase();
+    }
+
+    function filteredLive(){
+      applyLiveState();
+      const latencyRank = { fast:0, standard:1, slow:2 };
+      const maxRank = latencyRank[liveState.latency] ?? 0;
+      return liveUniverse.filter(item=>{
+        if(liveState.region !== 'all' && item.region !== liveState.region) return false;
+        if(liveState.market !== 'all' && item.market !== liveState.market) return false;
+        const rank = latencyRank[item.latency] ?? 2;
+        if(rank > maxRank) return false;
+        if(liveState.search){
+          const hay = `${item.event} ${item.league}`.toLowerCase();
+          if(!hay.includes(liveState.search)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderLiveSummary(data){
+      if(!liveEls.summary) return;
+      if(!data.length){
+        liveEls.summary.textContent = 'No live markets match the current filters.';
+        return;
+      }
+      const movers = data.filter(item=>Math.abs(item.change)>=0.05).length;
+      liveEls.summary.textContent = `${data.length} markets streaming · ${movers} significant movers`;
+    }
+
+    function liveFeedBanner(){
+      if(integrationConnected('live')) return '';
+      if(integrationHasKey('live')){
+        return `<article class="alert-card"><div class="alert-body"><strong>Activate your live feed</strong><div class="mini">Key stored. Run a test to enable real-time streaming.</div></div></article>`;
+      }
+      return `<article class="alert-card"><div class="alert-body"><strong>Connect a live odds provider</strong><div class="mini">Add an API key in the Integrations tab to unlock live pricing. Showing sample data.</div></div></article>`;
+    }
+
+    function renderLiveFeed(data){
+      if(!liveEls.feed) return;
+      if(!data.length){
+        liveEls.feed.innerHTML = liveFeedBanner() + '<article class="alert-card"><div class="alert-body"><strong>No live events</strong><div class="mini">Try broadening your region or latency filters.</div></div></article>';
+        return;
+      }
+      const cards = data.map(item=>{
+        const change = formatSignedNumber(item.change,2);
+        const moment = formatRelativeTime(item.updatedAt);
+        return `<article class="alert-card">
+          <div class="alert-meta"><span>${escapeHtml(item.league)}</span><span>${moment}</span></div>
+          <div class="alert-body">
+            <strong>${escapeHtml(item.event)}</strong>
+            <div class="mini">Market: ${escapeHtml(item.market)}</div>
+            <div class="mini">Live odds ${item.odds.toFixed(2)} (${change})</div>
+            <div class="mini">${escapeHtml(item.momentum)}</div>
+          </div>
+        </article>`;
+      }).join('');
+      liveEls.feed.innerHTML = liveFeedBanner() + cards;
+    }
+
+    function renderLiveTable(data){
+      if(!liveEls.tableBody) return;
+      if(!data.length){
+        liveEls.tableBody.innerHTML = '<tr><td colspan="5" style="padding:12px;text-align:center;color:var(--muted)">No live board data.</td></tr>';
+        return;
+      }
+      liveEls.tableBody.innerHTML = data.map(item=>{
+        const change = formatSignedNumber(item.change,2);
+        const momentumClass = item.change>0 ? 'trend-up' : item.change<0 ? 'trend-down' : '';
+        return `<tr>
+          <td>${escapeHtml(item.event)}</td>
+          <td>${escapeHtml(item.market)}</td>
+          <td>${item.odds.toFixed(2)}</td>
+          <td class="${momentumClass}">${change}</td>
+          <td>${escapeHtml(item.momentum)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderLive(){
+      const data = filteredLive();
+      renderLiveSummary(data);
+      renderLiveFeed(data);
+      renderLiveTable(data);
+    }
+
+    function builderUniverse(){ return curatedSelections; }
+    function syncBuilderFilters(){
+      const data = builderUniverse();
+      const leagues = uniqueValues(data,'league');
+      const markets = uniqueValues(data,'market');
+      const prevLeague = builderEls.leagueFilter.value || 'all';
+      const prevMarket = builderEls.marketFilter.value || 'all';
+      builderEls.leagueFilter.innerHTML = optionsMarkup(leagues, 'All leagues');
+      builderEls.marketFilter.innerHTML = optionsMarkup(markets, 'All markets');
+      if(leagues.includes(prevLeague)) builderEls.leagueFilter.value = prevLeague; else builderEls.leagueFilter.value = 'all';
+      if(markets.includes(prevMarket)) builderEls.marketFilter.value = prevMarket; else builderEls.marketFilter.value = 'all';
+    }
+    function builderFilterState(){
+      return {
+        league: builderEls.leagueFilter.value || 'all',
+        market: builderEls.marketFilter.value || 'all',
+        confidence: builderEls.confidenceFilter.value || 'all'
+      };
+    }
+    function getFilteredBuilderSelections(){
+      const state = builderFilterState();
+      return builderUniverse().filter(sel=>{
+        if(state.league!=='all' && sel.league!==state.league) return false;
+        if(state.market!=='all' && sel.market!==state.market) return false;
+        if(state.confidence!=='all' && sel.confidence!==state.confidence) return false;
+        return true;
+      }).sort((a,b)=>calcEdgeValue(b.modelProb,b.odds) - calcEdgeValue(a.modelProb,a.odds));
+    }
+    function renderBuilderSelections(){
+      const selections = getFilteredBuilderSelections();
+      if(!selections.length){
+        builderEls.selectionList.innerHTML = '<div class="mini" style="padding:12px">No selections for this filter just yet.</div>';
+        return;
+      }
+      builderEls.selectionList.innerHTML = selections.map(sel=>{
+        const edge = calcEdgeValue(sel.modelProb, sel.odds)*100;
+        const inSlip = builderState.slip.some(leg=>leg.id===sel.id);
+        const btnClass = 'small' + (sel.confidence==='elite' ? ' primary' : '');
+        const disabled = inSlip ? ' disabled' : '';
+        const label = inSlip ? 'Added' : 'Add to slip';
+        return `<article class="selection-card">
+          <header><span>${escapeHtml(sel.league)}</span><span>${formatDateTime(sel.kickoff)}</span></header>
+          <strong>${escapeHtml(sel.event)}</strong>
+          <div>${escapeHtml(sel.market)} — <span class="badge">${escapeHtml(sel.selection)}</span></div>
+          <footer><span>Odds ${sel.odds.toFixed(2)}</span><span class="${edge>=0?'trend-up':'trend-down'}">Edge ${edge.toFixed(1)}%</span></footer>
+          <button type="button" class="${btnClass}" data-action="add-leg" data-id="${sel.id}"${disabled}>${label}</button>
+          <div class="mini">${escapeHtml(sel.notes||'')}</div>
+        </article>`;
+      }).join('');
+    }
+    function addBuilderLeg(id){
+      if(builderState.slip.some(leg=>leg.id===id)) return;
+      const sel = builderUniverse().find(item=>item.id===id);
+      if(!sel) return;
+      builderState.slip.push(sel);
+      renderBuilderSlip();
+      renderBuilderSelections();
+    }
+    function removeBuilderLeg(id){
+      builderState.slip = builderState.slip.filter(leg=>leg.id!==id);
+      renderBuilderSlip();
+      renderBuilderSelections();
+    }
+    function renderBuilderSlip(){
+      if(!builderState.slip.length){
+        builderEls.slip.innerHTML = '<li style="padding:12px;text-align:center;color:var(--muted)">Add selections to build your slip.</li>';
+        updateBuilderSummary();
+        return;
+      }
+      builderEls.slip.innerHTML = builderState.slip.map(leg=>{
+        return `<li data-id="${leg.id}">
+          <div><strong>${escapeHtml(leg.selection)}</strong> <span class="mini">${escapeHtml(leg.market)}</span></div>
+          <div>${escapeHtml(leg.event)}</div>
+          <div class="meta"><span>Odds ${leg.odds.toFixed(2)} • ${percent(leg.modelProb)}</span><button type="button" class="small" data-action="remove-leg" data-id="${leg.id}">Remove</button></div>
+        </li>`;
+      }).join('');
+      updateBuilderSummary();
+    }
+    function updateBuilderSummary(){
+      if(!builderState.slip.length){
+        builderEls.odds.textContent = '1.00';
+        builderEls.prob.textContent = '0.0%';
+        builderEls.ret.textContent = '£0.00';
+        builderEls.edge.textContent = '0.0%';
+        return;
+      }
+      const combinedOdds = builderState.slip.reduce((acc,leg)=>acc*leg.odds,1);
+      const combinedProb = builderState.slip.reduce((acc,leg)=>acc*leg.modelProb,1);
+      const combinedImplied = builderState.slip.reduce((acc,leg)=>acc*impliedFromOdds(leg.odds),1);
+      const stake = Math.max(0, parseFloat(builderEls.stake.value)||0);
+      const projectedReturn = stake * combinedOdds;
+      const winProb = Math.min(0.999, Math.max(0, combinedProb));
+      const edge = combinedProb - combinedImplied;
+      builderEls.odds.textContent = combinedOdds.toFixed(2);
+      builderEls.prob.textContent = percent(winProb);
+      builderEls.ret.textContent = fmtMoney(projectedReturn);
+      builderEls.edge.textContent = formatSignedPercentDecimal(edge);
+    }
+    function syncPerformanceFormOptions(){
+      const view = performanceEls.view.value || 'teams';
+      const prev = performanceEls.form.value || 'all';
+      const options = view==='players'
+        ? [
+            {value:'all',label:'Season to date'},
+            {value:'last5',label:'Last 5 form'},
+            {value:'shots',label:'Shot volume'},
+            {value:'finishing',label:'Finishing'}
+          ]
+        : [
+            {value:'all',label:'Season to date'},
+            {value:'last5',label:'Last 5 form'},
+            {value:'home',label:'Home splits'},
+            {value:'away',label:'Away splits'}
+          ];
+      performanceEls.form.innerHTML = options.map(opt=>`<option value="${opt.value}">${opt.label}</option>`).join('');
+      if(options.some(opt=>opt.value===prev)) performanceEls.form.value = prev;
+    }
+    function performanceUniverse(){
+      return performanceEls.view.value==='players' ? playerPerformance : teamPerformance;
+    }
+    function syncPerformanceLeagueOptions(){
+      const data = performanceUniverse();
+      const leagues = uniqueValues(data,'league');
+      const prev = performanceEls.league.value || 'all';
+      performanceEls.league.innerHTML = optionsMarkup(leagues, 'All competitions');
+      if(leagues.includes(prev)) performanceEls.league.value = prev; else performanceEls.league.value = 'all';
+    }
+    function teamFocusMetric(team, focus){
+      if(focus==='last5') return team.formPointsLast5;
+      if(focus==='home') return team.homeWinRate;
+      if(focus==='away') return team.awayWinRate;
+      return team.wins / team.matches;
+    }
+    function renderPerformance(){
+      const view = performanceEls.view.value;
+      const league = performanceEls.league.value || 'all';
+      const focus = performanceEls.form.value || 'all';
+      const query = (performanceEls.search.value || '').trim().toLowerCase();
+      if(view==='players'){
+        let data = playerPerformance.filter(p=>{
+          if(league!=='all' && p.league!==league) return false;
+          if(query && !(`${p.player} ${p.team}`.toLowerCase().includes(query))) return false;
+          return true;
+        });
+        data = data.sort((a,b)=>playerFocusMetric(b, focus) - playerFocusMetric(a, focus));
+        renderPlayerStats(data);
+        renderPlayerTable(data, focus);
+      }else{
+        let data = teamPerformance.filter(t=>{
+          if(league!=='all' && t.league!==league) return false;
+          if(query && !(`${t.team} ${t.league}`.toLowerCase().includes(query))) return false;
+          return true;
+        });
+        data = data.sort((a,b)=>teamFocusMetric(b, focus) - teamFocusMetric(a, focus));
+        renderTeamStats(data);
+        renderTeamTable(data, focus);
+      }
+    }
+
+    function renderTeamStats(data){
+      if(!data.length){
+        performanceEls.stats.innerHTML = '<div class="card"><div class="k">Clubs</div><div class="v">0</div></div>';
+        performanceEls.table.innerHTML = '<div class="mini" style="padding:12px">No teams match the current filters.</div>';
+        return;
+      }
+      const totalMatches = data.reduce((sum,team)=>sum+team.matches,0);
+      const totalWins = data.reduce((sum,team)=>sum+team.wins,0);
+      const totalGoalsFor = data.reduce((sum,team)=>sum+team.goalsFor,0);
+      const totalGoalsAgainst = data.reduce((sum,team)=>sum+team.goalsAgainst,0);
+      const cleanSheets = data.reduce((sum,team)=>sum+team.cleanSheets,0);
+      const card = (k,v)=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+      const avgWin = totalMatches ? (totalWins/totalMatches*100) : 0;
+      const avgGoalsFor = totalMatches ? (totalGoalsFor/totalMatches) : 0;
+      const avgGoalsAgainst = totalMatches ? (totalGoalsAgainst/totalMatches) : 0;
+      const cleanSheetPct = totalMatches ? (cleanSheets/totalMatches*100) : 0;
+      performanceEls.stats.innerHTML = [
+        card('Clubs', data.length),
+        card('Avg Win %', `${avgWin.toFixed(1)}%`),
+        card('Goals For', avgGoalsFor.toFixed(2)),
+        card('Goals Against', avgGoalsAgainst.toFixed(2)),
+        card('Clean Sheet %', `${cleanSheetPct.toFixed(0)}%`)
+      ].join('');
+    }
+    function renderTeamTable(data, focus){
+      if(!data.length){ return; }
+      const rows = data.map(team=>{
+        const winRate = team.wins/team.matches;
+        const xgDiff = (team.xgFor - team.xgAgainst)/team.matches;
+        let trendLabel;
+        let trendClass = '';
+        if(focus==='last5'){
+          trendLabel = `${team.formPointsLast5} pts (last 5)`;
+          if(team.formPointsLast5>=10) trendClass='trend-up';
+          else if(team.formPointsLast5<=5) trendClass='trend-down';
+        }else if(focus==='home'){
+          const val = team.homeWinRate*100;
+          trendLabel = `Home W% ${val.toFixed(0)}%`;
+          if(val>=65) trendClass='trend-up'; else if(val<=40) trendClass='trend-down';
+        }else if(focus==='away'){
+          const val = team.awayWinRate*100;
+          trendLabel = `Away W% ${val.toFixed(0)}%`;
+          if(val>=60) trendClass='trend-up'; else if(val<=35) trendClass='trend-down';
+        }else{
+          const val = winRate*100;
+          trendLabel = `Win % ${val.toFixed(0)}%`;
+          if(val>=65) trendClass='trend-up'; else if(val<=40) trendClass='trend-down';
+        }
+        return `<tr>
+          <td><strong>${escapeHtml(team.team)}</strong><div class="mini">${escapeHtml(team.league)}</div></td>
+          <td>${team.wins}-${team.draws}-${team.losses}</td>
+          <td>${(winRate*100).toFixed(1)}%</td>
+          <td>${team.goalsFor} / ${team.goalsAgainst}</td>
+          <td>${formatSignedNumber(xgDiff,2)}</td>
+          <td>${escapeHtml(team.lastFive)}</td>
+          <td class="${trendClass}">${trendLabel}</td>
+        </tr>`;
+      }).join('');
+      performanceEls.table.innerHTML = `<table>
+        <thead><tr><th>Team</th><th>Record</th><th>Win %</th><th>Goals (F/A)</th><th>xG Diff</th><th>Form</th><th>Trend</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    }
+    function playerFocusMetric(player, focus){
+      if(focus==='last5') return player.last5Goals + player.last5Assists*0.7;
+      if(focus==='shots') return player.shotsPer90;
+      if(focus==='finishing') return player.conversion;
+      return player.goals + player.assists*0.7;
+    }
+    function renderPlayerStats(data){
+      if(!data.length){
+        performanceEls.stats.innerHTML = '<div class="card"><div class="k">Players</div><div class="v">0</div></div>';
+        performanceEls.table.innerHTML = '<div class="mini" style="padding:12px">No players match the current filters.</div>';
+        return;
+      }
+      const totalMinutes = data.reduce((sum,p)=>sum+p.minutes,0);
+      const totalGoals = data.reduce((sum,p)=>sum+p.goals,0);
+      const totalAssists = data.reduce((sum,p)=>sum+p.assists,0);
+      const avgShots = data.reduce((sum,p)=>sum+p.shotsPer90,0)/data.length;
+      const avgForm = data.reduce((sum,p)=>sum+p.formRating,0)/data.length;
+      const avgConversion = data.reduce((sum,p)=>sum+p.conversion,0)/data.length;
+      const card = (k,v)=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+      const goals90 = totalMinutes ? (totalGoals/(totalMinutes/90)) : 0;
+      const assists90 = totalMinutes ? (totalAssists/(totalMinutes/90)) : 0;
+      performanceEls.stats.innerHTML = [
+        card('Players', data.length),
+        card('Goals / 90', goals90.toFixed(2)),
+        card('Assists / 90', assists90.toFixed(2)),
+        card('Shots / 90', avgShots.toFixed(2)),
+        card('Form rating', avgForm.toFixed(1)),
+        card('Conversion', `${(avgConversion*100).toFixed(1)}%`)
+      ].join('');
+    }
+    function renderPlayerTable(data, focus){
+      if(!data.length){ return; }
+      const rows = data.map(player=>{
+        const minutes = player.minutes || (player.matches*90);
+        const goalsPer90 = minutes ? (player.goals/(minutes/90)) : 0;
+        const assistsPer90 = minutes ? (player.assists/(minutes/90)) : 0;
+        const conversion = player.conversion*100;
+        let trendLabel;
+        let trendClass = player.trend==='hot' ? 'trend-up' : player.trend==='cold' ? 'trend-down' : '';
+        if(focus==='last5'){
+          trendLabel = `Last 5: ${player.last5Goals}G / ${player.last5Assists}A`;
+        }else if(focus==='shots'){
+          trendLabel = `Shots/90 ${player.shotsPer90.toFixed(1)}`;
+        }else if(focus==='finishing'){
+          trendLabel = `Conversion ${conversion.toFixed(1)}%`;
+          if(conversion>=26) trendClass='trend-up';
+          else if(conversion<=15) trendClass='trend-down';
+        }else{
+          trendLabel = `Season G+A ${player.goals + player.assists}`;
+        }
+        return `<tr>
+          <td><strong>${escapeHtml(player.player)}</strong><div class="mini">${escapeHtml(player.team)}</div></td>
+          <td>${escapeHtml(player.position)}</td>
+          <td>${player.goals} / ${player.assists}</td>
+          <td>${player.shotsPer90.toFixed(1)}</td>
+          <td>${player.xg.toFixed(1)} / ${player.xa.toFixed(1)}</td>
+          <td>${goalsPer90.toFixed(2)} / ${assistsPer90.toFixed(2)}</td>
+          <td class="${trendClass}">${trendLabel}</td>
+        </tr>`;
+      }).join('');
+      performanceEls.table.innerHTML = `<table>
+        <thead><tr><th>Player</th><th>Role</th><th>G / A</th><th>Shots/90</th><th>xG / xA</th><th>Per 90 (G/A)</th><th>Trend</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    }
+    function confidenceLabel(conf){
+      switch(conf){
+        case 'elite': return 'Elite edge';
+        case 'strong': return 'Strong edge';
+        case 'speculative': return 'Speculative';
+        case 'monitor': return 'Market watch';
+        case 'custom': return 'User model';
+        default: return 'Market';
+      }
+    }
+    function syncOddsFilters(){
+      const leagues = uniqueValues(oddsUniverse,'league');
+      const markets = uniqueValues(oddsUniverse,'market');
+      const prevLeague = oddsEls.league.value || 'all';
+      const prevMarket = oddsEls.market.value || 'all';
+      oddsEls.league.innerHTML = optionsMarkup(leagues, 'All leagues');
+      oddsEls.market.innerHTML = optionsMarkup(markets, 'All markets');
+      if(leagues.includes(prevLeague)) oddsEls.league.value = prevLeague; else oddsEls.league.value = 'all';
+      if(markets.includes(prevMarket)) oddsEls.market.value = prevMarket; else oddsEls.market.value = 'all';
+    }
+    function renderOddsTable(){
+      let data = oddsUniverse.slice();
+      const league = oddsEls.league.value || 'all';
+      const market = oddsEls.market.value || 'all';
+      const sort = oddsEls.sort.value || 'edge-desc';
+      const show = oddsEls.show.value || 'all';
+      if(league!=='all') data = data.filter(sel=>sel.league===league);
+      if(market!=='all') data = data.filter(sel=>sel.market===market);
+      if(show==='positive') data = data.filter(sel=>calcEdgeValue(sel.modelProb, sel.odds)>0);
+      if(show==='negative') data = data.filter(sel=>calcEdgeValue(sel.modelProb, sel.odds)<0);
+      if(sort==='edge-asc'){
+        data.sort((a,b)=>calcEdgeValue(a.modelProb,a.odds)-calcEdgeValue(b.modelProb,b.odds));
+      }else if(sort==='time'){
+        data.sort((a,b)=>new Date(a.kickoff||0) - new Date(b.kickoff||0));
+      }else{
+        data.sort((a,b)=>calcEdgeValue(b.modelProb,b.odds)-calcEdgeValue(a.modelProb,a.odds));
+      }
+      if(!data.length){
+        oddsEls.tableBody.innerHTML = '<tr><td colspan="9" style="padding:14px;text-align:center;color:var(--muted)">No markets to display for this filter.</td></tr>';
+        return;
+      }
+      oddsEls.tableBody.innerHTML = data.map(sel=>{
+        const implied = impliedFromOdds(sel.odds);
+        const edge = calcEdgeValue(sel.modelProb, sel.odds);
+        const highlight = edge>0 ? 'highlight' : '';
+        const conf = confidenceLabel(sel.confidence);
+        return `<tr class="${highlight}">
+          <td><strong>${escapeHtml(sel.event)}</strong><div class="mini">${escapeHtml(sel.league)}</div></td>
+          <td>${escapeHtml(sel.market)}</td>
+          <td>${escapeHtml(sel.selection)}</td>
+          <td>${sel.odds.toFixed(2)}</td>
+          <td>${percent(implied)}</td>
+          <td>${percent(sel.modelProb)}</td>
+          <td>${formatSignedPercentDecimal(edge)}</td>
+          <td><span class="badge">${escapeHtml(conf)}</span></td>
+          <td>${formatDateTime(sel.kickoff)}</td>
+        </tr>`;
+      }).join('');
+    }
+    const MINUTE = 60000;
+    const pastMinutes = m => new Date(Date.now() - m * MINUTE).toISOString();
+
+    const alertFeed = [
+      { id:'alert-steam-arsenal', ref:'pl-ars-che-1x2', type:'steam', severity:'high', book:'Pinnacle', priceBefore:2.02, priceAfter:1.92, triggeredAt: pastMinutes(25), note:'Steam triggered once Arsenal XI confirmed Saka starting.' },
+      { id:'alert-line-btts', ref:'pl-ars-che-btts', type:'line', severity:'medium', book:'Bet365', priceBefore:1.95, priceAfter:1.82, triggeredAt: pastMinutes(52), note:'Line shortened after liquidity sweep but model edge still >5%.' },
+      { id:'alert-projection-city', ref:'ucl-city-real-over25', type:'projection', severity:'medium', book:'Model update', projectionBefore:0.63, projectionAfter:0.65, triggeredAt: pastMinutes(85), note:'Referee assignment and weather uplifted total model probability.' },
+      { id:'alert-steam-inter', ref:'serieA-inter-juve-1x2', type:'steam', severity:'high', book:'SharpBook', priceBefore:2.12, priceAfter:2.05, triggeredAt: pastMinutes(15), note:'Italian syndicate buy; watch for further drop below 2.00.' },
+      { id:'alert-line-lafc', ref:'mls-la-seattle-over25', type:'line', severity:'low', book:'DK', priceBefore:1.88, priceAfter:1.92, triggeredAt: pastMinutes(12), note:'Drifted after weather downgrade but still offers positive EV.' },
+      { id:'alert-projection-ajax', ref:'eredivisie-ajax-psv-over35', type:'projection', severity:'medium', book:'Model update', projectionBefore:0.57, projectionAfter:0.59, triggeredAt: pastMinutes(140), note:'Squad rotation bumps PSV shot volume projections.' }
+    ];
+
+    function alertTypeLabel(type){
+      switch(type){
+        case 'steam': return 'Steam alert';
+        case 'line': return 'Line move';
+        case 'projection': return 'Projection drift';
+        default: return 'Alert';
+      }
+    }
+    function formatRelativeTime(iso){
+      if(!iso) return '—';
+      const ts = new Date(iso).getTime();
+      if(Number.isNaN(ts)) return '—';
+      const diff = Date.now() - ts;
+      const abs = Math.abs(diff);
+      const mins = abs/MINUTE;
+      if(mins<1) return diff>=0 ? 'Just now' : 'In <1m';
+      if(mins<60){
+        const m = Math.round(mins);
+        return diff>=0 ? `${m}m ago` : `In ${m}m`;
+      }
+      const hours = mins/60;
+      if(hours<24){
+        const h = Math.round(hours);
+        return diff>=0 ? `${h}h ago` : `In ${h}h`;
+      }
+      const days = hours/24;
+      const d = Math.round(days);
+      return diff>=0 ? `${d}d ago` : `In ${d}d`;
+    }
+    function filterAlerts(){
+      const type = alertEls.type.value || 'all';
+      const severity = alertEls.severity.value || 'all';
+      const windowSel = alertEls.window.value || 'all';
+      return alertFeed.filter(alert=>{
+        if(type!=='all' && alert.type!==type) return false;
+        if(severity!=='all' && alert.severity!==severity) return false;
+        if(windowSel!=='all'){
+          const hours = Number(windowSel);
+          const diffHours = (Date.now() - new Date(alert.triggeredAt||0).getTime())/HOUR;
+          if(Number.isNaN(diffHours) || diffHours>hours || diffHours<0) return false;
+        }
+        return true;
+      });
+    }
+    function renderAlerts(){
+      const filtered = filterAlerts();
+      const high = filtered.filter(a=>a.severity==='high').length;
+      const medium = filtered.filter(a=>a.severity==='medium').length;
+      const low = filtered.filter(a=>a.severity==='low').length;
+      alertEls.summary.textContent = filtered.length
+        ? `Showing ${filtered.length} alerts · ${high} high / ${medium} medium / ${low} low`
+        : 'No alerts meet the selected filters right now.';
+      if(!filtered.length){
+        alertEls.feed.innerHTML = '';
+        return;
+      }
+      alertEls.feed.innerHTML = filtered.map(alert=>{
+        const sel = oddsUniverse.find(item=>item.id===alert.ref) || customProjections.find(item=>item.id===alert.ref);
+        const event = sel ? sel.event : alert.event;
+        const market = alert.market || (sel ? sel.market : '');
+        const selection = alert.selection || (sel ? sel.selection : '');
+        const odds = sel ? sel.odds : alert.priceAfter;
+        const modelProb = sel ? sel.modelProb : null;
+        const edge = modelProb && odds ? calcEdgeValue(modelProb, odds)*100 : null;
+        const edgeDisplay = edge!=null ? `${edge>=0?'+':''}${edge.toFixed(1)}%` : '—';
+        let priceLine = '';
+        if(alert.priceBefore && alert.priceAfter){ priceLine = `${alert.priceBefore.toFixed(2)} → ${alert.priceAfter.toFixed(2)}`; }
+        else if(alert.projectionBefore && alert.projectionAfter){ priceLine = `${(alert.projectionBefore*100).toFixed(1)}% → ${(alert.projectionAfter*100).toFixed(1)}%`; }
+        return `<article class="alert-card">
+          <div class="alert-meta"><span>${alertTypeLabel(alert.type)}</span><span>${formatRelativeTime(alert.triggeredAt)}</span></div>
+          <div class="alert-body">
+            <strong>${escapeHtml(event||'')}</strong>
+            <div class="mini">${escapeHtml(market||'')} • ${escapeHtml(alert.book||'')}</div>
+            <div class="mini">Selection: <span class="badge">${escapeHtml(selection||'')}</span></div>
+            <div class="mini">Movement: ${priceLine || 'n/a'} · Edge ${edgeDisplay}</div>
+            <div class="mini">${escapeHtml(alert.note||'')}</div>
+          </div>
+          <span class="severity ${alert.severity}">${alert.severity}</span>
+        </article>`;
+      }).join('');
+    }
+    function renderAlertWatchlist(){
+      const data = allValueSelections().map(sel=>{
+        const edge = calcEdgeValue(sel.modelProb, sel.odds)*100;
+        return {
+          event: sel.event,
+          market: sel.market,
+          selection: sel.selection,
+          confidence: sel.confidence,
+          edge
+        };
+      }).sort((a,b)=>b.edge - a.edge).slice(0,6);
+      if(!data.length){
+        alertEls.watchlist.innerHTML = '<tr><td colspan="4" style="padding:12px;text-align:center;color:var(--muted)">No watchlist entries yet.</td></tr>';
+        return;
+      }
+      alertEls.watchlist.innerHTML = data.map(item=>{
+        const trigger = item.confidence==='custom' ? 'Custom projection' : confidenceLabel(item.confidence);
+        const edgeDisplay = `${item.edge>=0?'+':''}${item.edge.toFixed(1)}%`;
+        return `<tr>
+          <td>${escapeHtml(item.event)}</td>
+          <td>${escapeHtml(item.market)}</td>
+          <td>${escapeHtml(trigger)}</td>
+          <td>${edgeDisplay}</td>
+        </tr>`;
+      }).join('');
+    }
+    function syncAlertsFromValue(){
+      renderAlertWatchlist();
+      renderAlerts();
+      syncTopline();
+    }
+    function syncTopline(){
+      const activeCount = filterAlerts().length || alertFeed.length;
+      const positiveEdges = allValueSelections().filter(sel=>calcEdgeValue(sel.modelProb, sel.odds)>0).length;
+      toplineEls.activeAlerts.textContent = activeCount;
+      toplineEls.positiveEdges.textContent = positiveEdges;
+    }
+
+    function buildTopbarNav(){
+      if(!topbarNavEl) return;
+      topbarNavEl.innerHTML = navEls.buttons.map(btn=>`<button data-section="${btn.dataset.section}">${btn.textContent}</button>`).join('');
+      topbarButtons = Array.from(topbarNavEl.querySelectorAll('button'));
+      topbarButtons.forEach(btn=>btn.addEventListener('click', ()=>activateSection(btn.dataset.section)));
+    }
+
+    function activateSection(id){
+      navEls.sections.forEach(sec=>sec.classList.toggle('active', sec.id===id));
+      navEls.buttons.forEach(btn=>btn.classList.toggle('active', btn.dataset.section===id));
+      if(topbarButtons.length){
+        topbarButtons.forEach(btn=>btn.classList.toggle('active', btn.dataset.section===id));
+      }
+      if(STORAGE_OK) safeSet(SECTION_KEY, id);
+    }
+    const savedSection = STORAGE_OK ? localStorage.getItem(SECTION_KEY) : null;
+
     function bind(){
       els.form.addEventListener('submit', addOrUpdate);
       els.resetBtn.addEventListener('click', resetForm);
@@ -310,12 +2612,105 @@
       els.btnExportJson.addEventListener('click', exportJSON);
       els.fileCsv.addEventListener('change', e=>{ const f=e.target.files && e.target.files[0]; if(f) importCSV(f); e.target.value=''; });
       els.fileJson.addEventListener('change', e=>{ const f=e.target.files && e.target.files[0]; if(f) restoreJSON(f); e.target.value=''; });
+
+      buildTopbarNav();
+      navEls.buttons.forEach(btn=>btn.addEventListener('click', ()=>activateSection(btn.dataset.section)));
+
+      valueEls.form.addEventListener('submit', handleValueSubmit);
+      valueEls.reset.addEventListener('click', ()=>{ resetValueForm(); });
+      valueEls.leagueFilter.addEventListener('change', ()=>{ renderValueModule(); syncTopline(); });
+      valueEls.marketFilter.addEventListener('change', ()=>{ renderValueModule(); syncTopline(); });
+      valueEls.timeFilter.addEventListener('change', ()=>{ renderValueModule(); syncTopline(); });
+      valueEls.edgeFilter.addEventListener('input', ()=>{ renderValueModule(); syncTopline(); });
+
+      if(trendsEls.type){
+        trendsEls.type.addEventListener('change', renderTrends);
+        trendsEls.timeframe.addEventListener('change', renderTrends);
+        trendsEls.region.addEventListener('change', renderTrends);
+        trendsEls.search.addEventListener('input', ()=>renderTrends());
+      }
+
+      if(liveEls.region){
+        liveEls.region.addEventListener('change', renderLive);
+        liveEls.market.addEventListener('change', renderLive);
+        liveEls.latency.addEventListener('change', renderLive);
+        liveEls.search.addEventListener('input', ()=>renderLive());
+      }
+
+      builderEls.leagueFilter.addEventListener('change', renderBuilderSelections);
+      builderEls.marketFilter.addEventListener('change', renderBuilderSelections);
+      builderEls.confidenceFilter.addEventListener('change', renderBuilderSelections);
+      builderEls.selectionList.addEventListener('click', e=>{
+        const btn = e.target.closest('button[data-action="add-leg"]');
+        if(btn) addBuilderLeg(btn.dataset.id);
+      });
+      builderEls.slip.addEventListener('click', e=>{
+        const btn = e.target.closest('button[data-action="remove-leg"]');
+        if(btn) removeBuilderLeg(btn.dataset.id);
+      });
+      builderEls.clear.addEventListener('click', ()=>{
+        builderState.slip = [];
+        renderBuilderSlip();
+        renderBuilderSelections();
+      });
+      builderEls.stake.addEventListener('input', updateBuilderSummary);
+
+      performanceEls.view.addEventListener('change', ()=>{
+        syncPerformanceFormOptions();
+        syncPerformanceLeagueOptions();
+        renderPerformance();
+      });
+      performanceEls.form.addEventListener('change', renderPerformance);
+      performanceEls.league.addEventListener('change', renderPerformance);
+      performanceEls.search.addEventListener('input', ()=>renderPerformance());
+
+      oddsEls.league.addEventListener('change', ()=>{ renderOddsTable(); syncTopline(); });
+      oddsEls.market.addEventListener('change', ()=>{ renderOddsTable(); syncTopline(); });
+      oddsEls.sort.addEventListener('change', renderOddsTable);
+      oddsEls.show.addEventListener('change', ()=>{ renderOddsTable(); syncTopline(); });
+
+      alertEls.type.addEventListener('change', ()=>{ renderAlerts(); syncTopline(); });
+      alertEls.severity.addEventListener('change', ()=>{ renderAlerts(); syncTopline(); });
+      alertEls.window.addEventListener('change', ()=>{ renderAlerts(); syncTopline(); });
+
+      document.querySelectorAll('[data-integration-action]').forEach(btn=>{
+        btn.addEventListener('click', handleIntegrationAction);
+      });
     }
 
     function renderAll(){ renderTable(); renderStats(); }
 
-    // Init
-    load(); bind(); resetForm(); renderAll();
+    load();
+    loadIntegrationState();
+    hydrateIntegrationInputs();
+    updateApiChips();
+    ['odds','stats','live'].forEach(updateStatusPill);
+    updateLiveConnectionBadge();
+    renderIntegrationLog();
+
+    bind();
+    resetForm();
+    renderAll();
+    syncValueFilters();
+    renderValueModule();
+    syncBuilderFilters();
+    renderBuilderSelections();
+    renderBuilderSlip();
+    syncPerformanceFormOptions();
+    syncPerformanceLeagueOptions();
+    renderPerformance();
+    syncOddsFilters();
+    renderOddsTable();
+    syncTrendsFilters();
+    renderTrends();
+    syncLiveFilters();
+    renderLive();
+    syncAlertsFromValue();
+    if(savedSection && navEls.sections.some(sec=>sec.id===savedSection)){
+      activateSection(savedSection);
+    }else{
+      activateSection('tracker');
+    }
   </script>
 </body>
 </html>
