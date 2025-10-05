@@ -817,8 +817,16 @@
       { player:'Cole Palmer', team:'Chelsea', league:'Premier League', position:'AM', matches:28, minutes:2140, goals:14, assists:8, shotsPer90:2.7, xg:12.2, xa:8.4, formRating:7.5, last5Goals:5, last5Assists:3, conversion:0.23, keyPassesPer90:2.9, trend:'hot' }
     ];
 
+    function safeDateValue(value){
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime();
+    }
     function renderTable(){
-      const rows = bets.slice().sort((a,b)=> (b.date+a.id) < (a.date+b.id) ? -1 : 1).map(b=>{
+      const rows = bets.slice().sort((a,b)=>{
+        const dateDiff = safeDateValue(b.date) - safeDateValue(a.date);
+        if(dateDiff !== 0) return dateDiff;
+        return String(b.id).localeCompare(String(a.id));
+      }).map(b=>{
         const profit = calcProfit(b);
         return `<tr>
           <td>${escapeHtml(b.date)}</td>
